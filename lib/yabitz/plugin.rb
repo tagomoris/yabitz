@@ -65,6 +65,10 @@ module Yabitz
     #
     @@plugins = {}
 
+    def self.yabitz_file_path(relative_path_from_root)
+      File.expand_path(File.dirname(__FILE__) + '../../../' + relative_path_from_root)
+    end
+
     def self.load_plugin_view(plugin_file_path, template_directory, view_name)
       open(File.dirname(plugin_file_path) + '/' + template_directory + '/' + view_name) {|fio| fio.read}
     end
