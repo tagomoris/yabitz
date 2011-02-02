@@ -1,0 +1,86 @@
+-# coding: utf-8
+
+%div#detailbox
+  %form.identity
+    %input{:type => "hidden", :name => "oid", :value => @srv.oid}
+    %input{:type => "hidden", :name => "type", :value => "service"}
+  %h3
+    サービス情報
+    %div{:style => "float: right; text-align: right; vertical-align: bottom; font-size: 50%;"}
+      - now = Time.now
+      - today = now.strftime('%Y-%m-%d')
+      - past = (now - 3600*24*30).strftime('%Y-%m-%d')
+      %a{:href => '/ybz/service/diff/' + @srv.oid.to_s + '?from=' + past + '&to=' + today} ホストの変更内容
+  = field_editable 'service', @srv, :text, :name, "サービス名", @srv.name, "未指定", :link => "/ybz/service/#{@srv.oid}"
+  = field_editable 'service', @srv, :selector, :content, "コンテンツ", (@srv.content ? @srv.content.oid.to_s : ""), "未指定", :link => (@srv.content ? "/ybz/content/#{@srv.content.oid}" : '#'), :display_value => @srv.content.to_s, :opt_class => Yabitz::Model::Content, :opt_value => :oid, :opt_label => :to_s
+  %div.value
+    - charging = @srv.content.charging
+    &= "課金設定: " + @srv.content.charging_title
+  = field_editable 'service', @srv, :combobox, :contact, "連絡先", (@srv.contact ? h(@srv.contact.label) : ""), "未指定", :link => (@srv.contact ? "/ybz/contact/#{@srv.contact.oid}" : '#'), :display_value => @srv.contact.to_s, :opt_class => Yabitz::Model::Contact, :opt_value => :label, :opt_label => :label, :everybody => true
+  = field_editable 'service', @srv, :text, :mladdress, "ML", @srv.mladdress, "登録なし"
+  - [['サービスURL', 'urls']].each do |pair|
+    - if @isadmin
+      %form.inline.field_edit_form{:name => "editAdmin", :action => "/ybz/service/#{@srv.oid}", :method => 'POST', :onsubmit => 'return false;'}
+        %div.hidden
+          %input{:type => "text", :name => "dummy", :value => ""}
+        %input{:type => "hidden", :name => "field", :value => pair.last}
+        %input{:type => "hidden", :name => "target_id", :value => @srv.id}
+        %input{:type => "hidden", :name => "operation", :value => "edit"}
+        %div.field
+          &= pair.first
+          %img.button.itemadd{:src => "/images/adding.png", :alt => "+"}
+        %ul.valueslist
+          - vnum = 0
+          - values = @srv.send(pair.last)
+          - values.each do |v|
+            - vnum += 1
+            %li.valueitem.clickableitem
+              %div.dataview.clickablelabel{:title => v}&= v.to_s
+              %div.dataedit
+                %input{:type => "text", :name => "value#{vnum}", :value => h(v.to_s)}
+              %div.dataupdown
+                - if vnum > 1
+                  %img.button.orderedit{:id => vnum, :name => 'up', :src => "/images/upward.png", :alt => "up"}
+                - if vnum < values.size
+                  %img.button.orderedit{:id => vnum, :name => 'down', :src => "/images/downward.png", :alt => "down"}
+          %li.valueitem.addinput
+            %div.dataedit
+              %input{:type => "text", :name => "value_new"}
+    - else
+      %div.field&= pair.first
+      %ul.valueslist
+        - @srv.send(pair.last).each do |v|
+          %li.valueitem&= v
+  - if @user
+    %form.inline.field_edit_form{:name => "fieldedit", :action => "/ybz/service/#{@srv.oid}", :method => "POST", :onsubmit => "return false;"}
+      %div.fieldvalue.memoitem
+        %div.hidden
+          %textarea.valueholder&= @srv.notes
+        %input{:type => "hidden", :name => "field", :value => "notes"}
+        %input{:type => "hidden", :name => "target_id", :value => @srv.id}
+        %input{:type => "hidden", :name => "operation", :value => "edit"}
+        %div.field
+          メモ:
+          %div.inline.memoeditbutton{:style => "margin-left: 1em;"}
+            %img.button.clickablebutton{:src => "/images/edit.png", :alt => "edit"}
+        - if @srv.notes.nil? or @srv.notes.empty?
+          %div.dataview{:style => "margin-left: 1em;"}
+            なし
+        - else
+          %div.dataview
+            - @srv.notes.split("\n").each do |note|
+              %div
+                &= note
+        %div.dataedit.memoarea
+          %textarea{:rows => 15, :cols => 28, :name => "value"}&= @srv.notes
+          %input{:type => "submit", :name => "memoupdate", :value => "更新"}
+          %input{:type => "reset", :name => "memocancel", :value => "取消"}
+  - else
+    %div.field メモ:
+    %div.value
+      - if @srv.notes.nil? or @srv.notes.empty?
+        なし
+      - else
+        - @srv.notes.split("\n").each do |note|
+          %div
+            &= note

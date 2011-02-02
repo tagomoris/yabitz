@@ -1,0 +1,45 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %p
+    表示：
+    &= @page_title
+%div#toolbox_spacer_bottom
+%div#maincontents
+  %table#machinesummary
+    %tr.machine_item
+      %td.td_line_head
+        %div{:style => "padding-top: 3em; padding-left: 0; padding-right: 0;"}
+      %td.machine_name{:style => 'font-weight: bold;'} OS名
+      %td.td_padding
+        %img{:src => "/images/1x1.gif"}
+      %td.machine_hosts{:style => 'font-weight: bold;'} 台数
+      %td.td_padding
+        %img{:src => "/images/1x1.gif"}
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+    - @osnames.each do |os|
+      %tr.machine_item.os.selectable{:id => h(escape(os))}
+        %td.td_line_head
+          %div{:style => "padding-top: 3em; padding-left: 0; padding-right: 0;"}
+        %td.machine_name&= os
+        - count = Yabitz::Model::OSInformation.count_hosts(os)
+        %td.td_padding
+          %img{:src => "/images/1x1.gif"}
+        %td.machine_hosts&= count
+        %td.td_padding
+          %img{:src => "/images/1x1.gif"}
+        %td.td_line_term
+          %img{:src => "/images/1x1.gif"}
+    %tr.machine_item.os.selectable{:id => 'NULL'}
+      %td.td_line_head
+        %div{:style => "padding-top: 3em; padding-left: 0; padding-right: 0;"}
+      %td.machine_name 未指定ホスト
+      %td.td_padding
+        %img{:src => "/images/1x1.gif"}
+      %td.machine_hosts&= Yabitz::Model::OSInformation.count_hosts_without_os
+      %td.td_padding
+        %img{:src => "/images/1x1.gif"}
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}

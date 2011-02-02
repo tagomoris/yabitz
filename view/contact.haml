@@ -1,0 +1,27 @@
+-# coding: utf-8
+
+%tr.contact_item{:id => "#{contact.oid}"}
+  %td.td_line_head
+    %div.header_status
+  %td.contact_label
+    %a{:href => "/ybz/contact/#{contact.oid}"}&= contact.label
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.contact_services
+    %table.c_services{:style => "width: 100%;"}
+      - if contact.services.size > 0
+        %tr
+          %td.c_service&= contact.services[0].name
+      - if contact.services.size > 1
+        %tr
+          %td.c_service&= contact.services[1].name
+  %td.contact_services_multi
+    - if contact.services.size > 2
+      %img{:border => "0", :src => "/images/multi_records.png", :width => "16", :height => "16", :alt => "他", :style => "vertical-align: middle;"}
+    - else
+      %img{:src => "/images/1x1.gif"}
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.contact_members #{contact.members_by_id.size}人
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}

@@ -1,0 +1,9 @@
+-# coding: utf-8
+
+%div#detailbox
+  %form.identity
+    %input{:type => "hidden", :name => "oid", :value => @dept.oid}
+    %input{:type => "hidden", :name => "type", :value => "dept"}
+  %h3
+    部署情報
+  = field_editable 'dept', @dept, :text, :name, "部署名", @dept.name, "未指定"

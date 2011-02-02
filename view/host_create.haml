@@ -1,0 +1,142 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %div ホスト追加
+  %div{:style => "margin-left: 2em;"}
+    %img{:src => "/images/1x1.gif"}
+%div#toolbox_spacer_bottom
+%div#maincontents
+  %table.mainviewboxouter
+    %tr
+      %td
+        %div.mainviewbox
+          %form.mainform{:name => "host_create", :action => "/ybz/host/create", :method => "POST", :onsubmit => "return false;"}
+            %table.inputitems
+              %tr
+                %td.namefield サービス
+                %td :
+                %td.inputfield
+                  %select{:name => "service"}
+                    - Yabitz::Model::Service.all.sort.each do |service|
+                      - if target and target.oid == service.oid
+                        %option{:value => service.oid, :selected => true}&= service.name + ' [' + service.content.to_s + ']'
+                      - else
+                        %option{:value => service.oid}&= service.name + ' [' + service.content.to_s + ']'
+              %tr
+                %td.namefield 状態
+                %td :
+                %td.inputfield
+                  %select{:name => "status"}
+                    - Yabitz::Model::Host::STATUS_LIST.each do |state|
+                      %option{:value => state}= Yabitz::Model::Host.status_title(state)
+            %div.cloneable
+            %div.hostadd_item.cloneable
+              %input.cloneable_number{:type => "hidden", :name => "adding0", :value => 0}
+              %table.inputitems
+                %tr
+                  %td.namefield DNSName
+                  %td :
+                  %td.inputfield
+                    %input.simple.blank_onclone{:type => "text", :name => "dnsnames0", :size => 30}
+                  %td.spacer
+                    %div
+                  %td.namefield Local IP
+                  %td :
+                  %td.inputfield
+                    %input.simple.blank_onclone{:type => "text", :name => "localips0", :size => 17}
+                %tr
+                  %td
+                    %div{:style => "padding-top: 5px;"}
+                %tr
+                  %td.namefield ラック位置
+                  %td :
+                  %td.inputfield
+                    %input.simple.optional{:type => "text", :name => "rackunit0", :size => 17}
+                  %td.spacer
+                    %div
+                  %td.namefield HWID
+                  %td :
+                  %td.inputfield
+                    %input.simple.optional{:type => "text", :name => "hwid0", :size => 17}
+                %tr
+                  %td
+                    %div{:style => "padding-top: 5px;"}
+                %tr
+                  %td.namefield タイプ
+                  %td :
+                  %td.inputfield
+                    %select{:name => "type0"}
+                      - Yabitz::HostType.names.each do |type|
+                        %option{:value => h(type)}&= type
+                %tr
+                  %td
+                    %div{:style => "padding-top: 5px;"}
+                %tr
+                  %td.namefield HW
+                  %td :
+                  %td.inputfield
+                    %select{:name => "hwinfo0"}
+                      - Yabitz::Model::HwInformation.all.sort.each do |hwinfo|
+                        - if hwinfo.prior
+                          %option{:value => hwinfo.oid, :selected => true}&= hwinfo.to_s
+                        - else
+                          %option{:value => hwinfo.oid}&= hwinfo.to_s
+                  %td.spacer
+                    %div
+                  %td.namefield OS
+                  %td :
+                  %td.inputfield
+                    %select{:name => "os0"}
+                      - Yabitz::Model::OSInformation.all.sort.each do |osinfo|
+                        - if osinfo.prior
+                          %option.optional{:value => osinfo.oid, :selected => true}&= osinfo.name
+                        - else
+                          %option.optional{:value => osinfo.oid}&= osinfo.name
+                %tr
+                  %td
+                    %div{:style => "padding-top: 5px;"}
+                %tr
+                  %td.namefield メモリ
+                  %td :
+                  %td.inputfield
+                    %input.simple.optional{:type => "text", :name => "memory0", :size => 17}
+                  %td.spacer
+                    %div
+                  %td.namefield ディスク
+                  %td :
+                  %td.inputfield
+                    %input.simple.optional{:type => "text", :name => "disk0", :size => 17}
+                %tr
+                  %td
+                    %div{:style => "padding-top: 5px;"}
+                %tr
+                  %td.namefield Global IP
+                  %td :
+                  %td.inputfield
+                    %input.simple.optional{:type => "text", :name => "globalips0", :size => 17}
+                  %td.spacer
+                    %div
+                  %td.namefield Virtual IP
+                  %td :
+                  %td.inputfield
+                    %input.simple.optional{:type => "text", :name => "virtualips0", :size => 17}
+                %tr
+                  %td
+                    %div{:style => "padding-top: 5px;"}
+                %tr
+                  %td.namefield タグ
+                  %td :
+                  %td.inputfield
+                    %input.simple.optional{:type => "text", :name => "tagchain0", :size => 30}
+                  %td{:colspan => 4}
+                    %div.listclone{:style => "text-align: right;"}
+                      %img.button{:src => "/images/adding.png"}
+                %tr
+                  %td
+                    %div{:style => "padding-top: 5px;"}
+            %div{:style => "padding-right: 3em; text-align: right;"}
+              %button{:onclick => "window.location.reload(); return false;"}
+                %div{:style => "padding: 0.5em;"} キャンセル
+              %button.mainform_commit{:onclick => "return false;"}
+                %div{:style => "padding: 0.5em 3em 0.5em 3em;"} 作成

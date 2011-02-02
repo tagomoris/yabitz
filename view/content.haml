@@ -1,0 +1,29 @@
+-# coding: utf-8
+
+%tr.content_item.selectable{:id => "#{content.oid}", :title => h(content.name)}
+  - case content.charging
+  - when Yabitz::Model::Content::CHARGING_NO_COUNT
+    %td.content_charging_no_count
+      %div.header_status
+  - when Yabitz::Model::Content::CHARGING_SHARED
+    %td.content_charging_shared
+      %div.header_status
+  - when Yabitz::Model::Content::CHARGING_NORMAL
+    %td.content_charging_normal
+      %div.header_status
+  - else
+    %td.content_charging_normal
+      %div.header_status
+  %td.content_name&= content.name
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.content_code
+    &= content.code
+    %img{:src => "/images/1x1.gif"}
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.content_dept
+    &= content.dept.to_s
+    %img{:src => "/images/1x1.gif"}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}

@@ -1,0 +1,71 @@
+-# coding: utf-8
+
+-# :locals => {:action, :target_id, :fieldname, :fieldtitle, :fieldvalue, :blanklabel, :link, :display_value}
+-#   :input_type => :text, :combobox, :selector
+-#   :combobox {:listproc, :list_item_value_field}
+-#   :selector {:listproc, :list_item_value_field, :list_item_label_field, :display_value}
+- everybody ||= false
+- link ||= nil
+- display_value ||= nil
+- if @isadmin or everybody
+  %form.inline.field_edit_form{:name => "fieldedit", :action => action, :method => 'POST', :onsubmit => 'return false;'}
+    %div.fieldvalue.clickableitem
+      %div.hidden
+        %input{:type => "text", :name => "dummy", :value => ""}
+      %input{:type => "hidden", :name => "field", :value => fieldname}
+      %input{:type => "hidden", :name => "target_id", :value => target_id}
+      %input{:type => "hidden", :name => "operation", :value => "edit"}
+      %div.fieldinline&= fieldtitle + ':'
+      - if link and not fieldvalue.nil? and not fieldvalue.empty?
+        %div.dataview{:title => h(fieldvalue.to_s)}
+          %a{:href => link}&= display_value ? display_value : fieldvalue.to_s
+          %div.dataeditbutton
+            %img.button.clickablebutton{:src => "/images/edit.png", :alt => "edit"}
+      - else
+        %div.dataview.clickablelabel{:title => h(fieldvalue.to_s)}
+          &= (fieldvalue.nil? or fieldvalue.empty?) ? blanklabel : (display_value ? display_value : fieldvalue.to_s)
+      - case input_type
+      - when :text
+        %div.dataedit
+          %input{:type => "text", :name => "value", :value => h(fieldvalue.to_s)}
+      - when :combobox
+        %div.dataedit.combobox
+          %div.inline.comboinput
+            %input{:type => "text", :name => "value", :value => h(fieldvalue.to_s)}
+          %div.inline.comboselect
+            %select
+              - if fieldvalue.nil? or fieldvalue.empty?
+                %option{:value => "___blank", :selected => true} 選択してください
+              - else
+                %option{:value => "___blank"} 選択してください
+              %option{:value => "___input"} 新しく入力
+              - list_item_label_field ||= list_item_value_field
+              - listproc.call().each do |i|
+                - if not fieldvalue.nil? and not fieldvalue.empty? and fieldvalue == i.send(list_item_value_field)
+                  %option{:value => h(i.send(list_item_value_field).to_s), :selected => true}&= i.send(list_item_label_field)
+                - else
+                  %option{:value => h(i.send(list_item_value_field).to_s)}&= i.send(list_item_label_field)
+      - when :selector, :simpleselector
+        %div.dataedit.selector
+          %div.hidden
+            %input{:type => "text", :name => "value", :value => h(fieldvalue.to_s)}
+          %div.inline.selectorbox
+            %select
+              - if fieldvalue.nil? or fieldvalue.empty?
+                %option{:value => "___blank", :selected => true} 選択してください
+              - else
+                %option{:value => "___blank"} 選択してください
+              - list_item_label_field ||= list_item_value_field
+              - listproc.call().each do |i|
+                - if not fieldvalue.nil? and not fieldvalue.empty? and fieldvalue == i.send(list_item_value_field).to_s
+                  %option{:value => h(i.send(list_item_value_field).to_s), :selected => true}&= i.send(list_item_label_field)
+                - else
+                  %option{:value => h(i.send(list_item_value_field).to_s)}&= i.send(list_item_label_field)
+- else
+  %div.fieldvalue
+    %span.field&= fieldtitle + ':'
+    %span.value
+      - if link and not fieldvalue.nil? and not fieldvalue.empty?
+        %a{:href => link}&= display_value ? display_value : fieldvalue.to_s
+      - else
+        &= (fieldvalue.nil? or fieldvalue.empty?) ? blanklabel : (display_value.nil? ? fieldvalue.to_s : display_value)

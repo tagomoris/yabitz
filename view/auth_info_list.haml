@@ -1,0 +1,11 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %p
+    表示：
+    &= @page_title
+%div#toolbox_spacer_bottom
+%div#maincontents
+  %table#authinfolist
+    = partial :auth_info, :collection => @users

@@ -1,0 +1,22 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %p
+    条件：
+    &= @page_title
+  -#
+    - if @isadmin
+      %div
+        選択したサービスへの操作: 
+        -# TODO write!
+        %select.admin_operations#ipaddress_operation_list
+          %option{:value => 'nonedefault'} 操作を選択してください
+          %option{:value => 'none', :disabled => true} -- IPアドレスの予約 --
+          %option{:value => 'hold'} IPアドレスを予約済みアドレス(VIP使用)としてマーク
+          %option{:value => 'none', :disabled => true} -- データ削除 --
+          %option{:value => 'delete_records'} 選択したサービスのデータを消去
+%div#toolbox_spacer_bottom
+%div#maincontents
+  %table#iplist
+    = partial :ipaddress, :collection => @ips

@@ -1,0 +1,42 @@
+-# coding: utf-8
+-# :anyone_editable => true
+%div#detailbox
+  %form.identity
+    %input{:type => "hidden", :name => "oid", :value => @contactmember.oid}
+    %input{:type => "hidden", :name => "type", :value => "contactmember"}
+  %h3
+    連絡先メンバ
+  = field_editable 'contactmember', @contactmember, :text, :name, "氏名", @contactmember.name, "未入力", :everybody => true
+  = field_editable 'contactmember', @contactmember, :text, :telno, "電話", @contactmember.telno, "未入力", :everybody => true
+  = field_editable 'contactmember', @contactmember, :text, :mail, "メール", @contactmember.mail, "未入力", :everybody => true
+  = field_editable 'contactmember', @contactmember, :text, :badge, "社員番号", @contactmember.badge, "不明"
+  = field_editable 'contactmember', @contactmember, :text, :position, "職種", @contactmember.position, "不明"
+  %div.field このメンバが含まれるリスト
+  %ul.valueslist
+  - Yabitz::Model::Contact.all.select{|c| c.members_by_id.include?(@contactmember.oid)}.each do |contact|
+    %li.valueitem
+      %a{:href => "/ybz/contact/" + contact.oid.to_s}&= contact.label
+  -# why not to check @user ? It's because contact/contactmember page requires authentication at the point of HTTP GET request.
+  %form.inline.field_edit_form{:name => "fieldedit", :action => "/ybz/contactmember/#{@contactmember.oid}", :method => "POST", :onsubmit => "return false;"}
+    %div.fieldvalue.memoitem
+      %div.hidden
+        %textarea.valueholder&= @contactmember.comment
+      %input{:type => "hidden", :name => "field", :value => "comment"}
+      %input{:type => "hidden", :name => "target_id", :value => @contactmember.id}
+      %input{:type => "hidden", :name => "operation", :value => "edit"}
+      %div.field
+        メモ:
+        %div.inline.memoeditbutton{:style => "margin-left: 1em;"}
+          %img.button.clickablebutton{:src => "/images/edit.png", :alt => "edit"}
+      - if @contactmember.comment.nil? or @contactmember.comment.empty?
+        %div.dataview{:style => "margin-left: 1em;"}
+          なし
+      - else
+        %div.dataview
+          - @contactmember.comment.split("\n").each do |note|
+            %div
+              &= note
+      %div.dataedit.memoarea
+        %textarea{:rows => 15, :cols => 28, :name => "value"}&= @contactmember.comment
+        %input{:type => "submit", :name => "memoupdate", :value => "更新"}
+        %input{:type => "reset", :name => "memocancel", :value => "取消"}

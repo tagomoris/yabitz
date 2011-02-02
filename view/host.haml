@@ -1,0 +1,68 @@
+-# coding: utf-8
+
+%tr.host_outline.selectable{:id => "#{host.oid}", :title => h(host.display_name)}
+  - case host.status
+  - when Yabitz::Model::Host::STATUS_UNDER_DEV
+    %td.host_status_under_dev
+      %div.header_status
+  - when Yabitz::Model::Host::STATUS_NO_COUNT
+    %td.host_status_no_count
+      %div.header_status
+  - when Yabitz::Model::Host::STATUS_SUSPENDED
+    %td.host_status_suspended
+      %div.header_status
+  - when Yabitz::Model::Host::STATUS_STANDBY
+    %td.host_status_standby
+      %div.header_status
+  - when Yabitz::Model::Host::STATUS_REMOVING
+    %td.host_status_removing
+      %div.header_status
+  - when Yabitz::Model::Host::STATUS_REMOVED
+    %td.host_status_removed
+      %div.header_status
+  - when Yabitz::Model::Host::STATUS_MISSING
+    %td.host_status_missing
+      %div.header_status
+  - when Yabitz::Model::Host::STATUS_OTHER
+    %td.host_status_other
+      %div.header_status
+  - else
+    %td.host_status_in_service
+      %div{:style => "padding-top: 3em;"}
+  %td.host_displayname
+    &= host.display_name
+    - if host.dnsnames_by_id.size > 1
+      %img{:border => "0", :src => "/images/multi_records.png", :width => "16", :height => "16", :alt => "他", :style => "vertical-align: middle;"}
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  - ips = host.localips.map{|i| i.address} + host.globalips.map{|i| '(g)' + i.address} + host.virtualips.map{|i| '(v)' + i.address}
+  %td.host_ipaddresses
+    %table.ipaddrs{:style => "width: 100%;"}
+      - if ips.size > 0
+        %tr
+          %td.ipaddress= ips[0]
+      - if ips.size > 1
+        %tr
+          %td.ipaddress= ips[1]
+  %td.host_ipaddresses_multi
+    - if ips.size > 2
+      %img{:border => "0", :src => "/images/multi_records.png", :width => "16", :height => "16", :alt => "他", :style => "vertical-align: middle;"}
+    - else
+      %img{:src => "/images/1x1.gif"}
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.host_service
+    &= host.service.to_s
+  %td.td_padding_narrow
+    %img{:src => "/images/1x1.gif"}
+  %td.host_hwid
+    &= host.hwid
+    %img{:src => "/images/1x1.gif"}
+  %td.td_padding_narrow
+    %img{:src => "/images/1x1.gif"}
+  %td.host_rackunit
+    &= host.rackunit.to_s
+    %img{:src => "/images/1x1.gif"}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+

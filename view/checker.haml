@@ -1,0 +1,216 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %div データ整合性チェック
+%div#toolbox_spacer_bottom
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} 仮想化ホストで、親が無いかタイプが不整合など
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:host_relation_mismatches].each do |host|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/host/#{host.oid}"}&= host.display_name + '(' + host.type + ')'
+      %td.checker_info
+        - if host.parent.nil?
+          親が設定されていない
+        - else
+          %a{:href => "/ybz/host/#{host.parent.oid}"}&= host.parent.display_name + '(' + host.parent.type + ')'
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} 仮想化ホストで、筐体情報がセットされていないか不整合
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:type_and_hwinfo_mismatches].each do |host|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/host/#{host.oid}"}&= host.display_name + '(' + host.type + ')'
+      %td.checker_info
+        - if host.hwinfo.nil?
+          筐体情報が未設定
+        - else
+          &= host.hwinfo.name + '(' + (host.hwinfo.virtualized? ? '仮想化' : '非仮想化') + ')'
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} 仮想化ホストで、親とラック位置が一致しない
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:parent_rackunit_mismatches].each do |host|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/host/#{host.oid}"}&= host.display_name + '(' + host.rackunit.to_s + ')'
+      %td.checker_info
+        %a{:href => "/ybz/host/#{host.parent.oid}"}&= host.parent.display_name + '(' + host.parent.rackunit.to_s + ')'
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} 仮想化ホストで、親とHWIDが一致しない
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:parent_hwid_mismatches].each do |host|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/host/#{host.oid}"}&= host.display_name + '(' + host.hwid + ')'
+      %td.checker_info
+        %a{:href => "/ybz/host/#{host.parent.oid}"}&= host.parent.display_name + '(' + host.parent.hwid + ')'
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} 物理ホストでHWIDが重複している
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:hwid_duplications].each do |hwid, list|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/search?andor=OR&cond0=0&field0=hwid&value0=#{u(hwid)}"}&= hwid
+      %td.checker_info
+        %ul
+          - list.each do |h|
+            %li
+              %a{:href => "/ybz/host/#{h.oid}"}&= h.display_name + '(' + Yabitz::Model::Host.status_title(h.status) + ')'
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} HWIDがセットされていない
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:hwid_missings].each do |host|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        なし
+      %td.checker_info
+        %ul
+          %li
+            %a{:href => "/ybz/host/#{host.oid}"}&= host.display_name + '(' + Yabitz::Model::Host.status_title(host.status) + ')'
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} ホスト間でDNS名が重複している
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:dnsname_duplications].each do |dn|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/search?andor=OR&cond0=0&field0=dnsname&value0=#{u(dn.dnsname)}"}&= dn.dnsname
+      %td.checker_info
+        %ul
+          - dn.hosts.each do |h|
+            %li
+              %a{:href => "/ybz/host/#{h.oid}"}&= h.display_name + '(' + Yabitz::Model::Host.status_title(h.status) + ')'
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} 物理ホスト間でラック位置が重複している
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:rackunit_duplications].each do |ru|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/search?andor=OR&cond0=0&field0=rackunit&value0=#{u(ru.rackunit)}"}&= ru.rackunit
+      %td.checker_info
+        %ul
+          - ru.hosts.each do |h|
+            %li
+              %a{:href => "/ybz/host/#{h.oid}"}&= h.display_name + '(' + Yabitz::Model::Host.status_title(h.status) + ')'
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} ラック位置がセットされていない
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:rackunit_missings].each do |host|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        なし
+      %td.checker_info
+        %ul
+          %li
+            %a{:href => "/ybz/host/#{host.oid}"}&= host.display_name + '(' + Yabitz::Model::Host.status_title(host.status) + ')'
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} ホスト間でIPアドレスが重複している(Virtual IP以外)
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:ipaddress_duplications].each do |ip|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/search?andor=OR&cond0=0&field0=ipaddress&value0=#{u(ip.address)}"}&= ip.address
+      %td.checker_info
+        %ul
+          - ip.hosts.each do |h|
+            %li
+              %a{:href => "/ybz/host/#{h.oid}"}&= h.display_name + '(' + Yabitz::Model::Host.status_title(h.status) + ')'
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} 連絡先指定のないサービス
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:services_without_contacts].each do |srv|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/service/#{srv.oid}"}&= srv.name
+      %td.checker_info
+        %img{:src => "/images/1x1.gif"}
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+

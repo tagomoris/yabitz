@@ -1,0 +1,24 @@
+-# coding: utf-8
+
+%div#detailbox
+  %form.identity
+    %input{:type => "hidden", :name => "oid", :value => @content.oid}
+    %input{:type => "hidden", :name => "type", :value => "content"}
+  %h3
+    コンテンツ情報
+  = field_editable 'content', @content, :text, :name, "コンテンツ名", @content.name, "未指定"
+  = field_editable 'content', @content, :simpleselector, :charging, "課金", @content.charging, "未指定", :display_value => Yabitz::Model::Content.charging_title(@content.charging), :values => Yabitz::Model::Content::CHARGING_LABELS, :labels => Yabitz::Model::Content::CHARGING_LABELS.map{|l| Yabitz::Model::Content.charging_title(l)}
+  = field_editable 'content', @content, :text, :code, "コード", @content.code, "未入力"
+  = field_editable 'content', @content, :selector, :dept, "部署", (@content.dept ? @content.dept.oid.to_s : ""), "未指定", :link => "/ybz/dept/#{@content.dept.oid}", :display_value => @content.dept.to_s, :opt_class => Yabitz::Model::Dept, :opt_value => :oid, :opt_label => :to_s
+  %div.field サービス
+  %ul.valueslist
+    - @content.services.each do |s|
+      %li.valueitem
+        %a{:href => "/ybz/hosts/service/#{s.oid}"}&= s.name
+  - if @content.services.size > 0
+    - query_string_parts = []
+    - @content.services.each_index{|i| query_string_parts.push("cond#{i}=#{i}&field#{i}=service&value#{i}=" + u(@content.services[i].name))}
+    %div.field ホスト
+    %div.value
+      %a{:href => '/ybz/search?andor=OR&' + query_string_parts.join('&')} 一覧
+

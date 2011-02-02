@@ -1,0 +1,9 @@
+-# -*- coding: utf-8 -*-
+%div#toolbox_spacer_top
+%div#toolbox
+  %p&= @page_title
+  %p
+    %a{:href => '/ybz/host/' + @hosts.sort.map(&:oid).join('-')} ラック内の全ホストを表示
+%div#toolbox_spacer_bottom
+%div#maincontents
+  = haml Yabitz::RackTypes.search(@rack.label).rack_display_template

@@ -1,0 +1,26 @@
+-# coding: utf-8
+
+%tr.hwinfo_item{:id => "#{hwinfo.oid}"}
+  %td.hwinfo_head
+    %div.header_status
+  %td.hwinfo_name&= hwinfo.name
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.hwinfo_units
+    - if hwinfo.units.nil? or hwinfo.units == ""
+      = '-'
+    - else
+      = hwinfo.units
+    - if hwinfo.calcunits.to_f == 0.0
+      (-)
+    - else
+      &= "(" + hwinfo.calcunits + ")"
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.hwinfo_virtualized
+    - if hwinfo.virtualized?
+      (v)
+    - else
+      (-)
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}

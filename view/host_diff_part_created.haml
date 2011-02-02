@@ -1,0 +1,189 @@
+-# -*- coding: utf-8 -*-
+%tr.host_outline.selectable.unupdatable{:id => oid}
+  - rowcolor = '#ffcccc'
+  %td.td_line_head{:style => "background-color: #{rowcolor}; font-weight: bold; width: 8em;"}
+    OID: #{oid}
+  %td.td_padding{:style => "background-color: #{rowcolor};"}
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 2, :style => "background-color: #{rowcolor};"}
+    host:
+    &= to.display_name
+  %td.td_base{:style => "text-align: right; background-color: #{rowcolor};"}
+    %a{:href => "/ybz/host/diff/#{oid}/#{to.id}/0"} 変更
+    %a{:href => "/ybz/host/history/#{oid}"} 履歴
+  %td.td_line_term{:style => "background-color: #{rowcolor};"}
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    更新日時
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: right;"}
+    期間中に作成: #{to.inserted_at}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    データ状態
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    - if to.removed
+      削除済み
+    - else
+      通常
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    サービス
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    &= to.service.name
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    状態
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    &= Yabitz::Model::Host.status_title(to.status)
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    タイプ/親子
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    &= to.type
+    - if to.parent
+      %br
+      &= to.parent.display_name
+    - if to.children and not to.children.empty?
+      - to.children.each do |c|
+        %br
+        &= c.display_name
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    ラック位置
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    &= to.rackunit.to_s
+    %img{:src => "/images/1x1.gif"}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    HWID
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    &= to.hwid
+    %img{:src => "/images/1x1.gif"}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    ハードウェア
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    &= to.hwinfo ? to.hwinfo.name : ""
+    %img{:src => "/images/1x1.gif"}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    メモリ
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    &= to.memory
+    %img{:src => "/images/1x1.gif"}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    ディスク
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    &= to.disk
+    %img{:src => "/images/1x1.gif"}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    OS
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    &= to.os
+    %img{:src => "/images/1x1.gif"}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    DNS
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    = to.dnsnames.map{|n| h(n.dnsname)}.join('<br />')
+    %img{:src => "/images/1x1.gif"}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    Local IP
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    = to.localips.map{|i| h(i.address)}.join('<br />')
+    %img{:src => "/images/1x1.gif"}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    Global IP
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    = to.globalips.map{|g| h(g.address)}.join('<br />')
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    Virtual IP
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    = to.virtualips.map{|v| h(v.address)}.join('<br />')
+    %img{:src => "/images/1x1.gif"}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    メモ
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    = to.notes ? to.notes.split("\n").map{|n| h(n)}.join('<br />') : ""
+    %img{:src => "/images/1x1.gif"}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
+%tr.host_outline
+  %td.td_line_head{:style => "text-align: center;"}
+    タグ
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
+    = to.tagchain.tagchain.map{|t| h(t)}.join('<br />')
+    %img{:src => "/images/1x1.gif"}
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}

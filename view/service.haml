@@ -1,0 +1,22 @@
+-# coding: utf-8
+- @service_unselectable ||= false
+
+%tr.service_item.selectable{:id => (@service_unselectable ? "" : "#{service.oid}"), :title => h(service.name)}
+  - case service.content.charging
+  - when Yabitz::Model::Content::CHARGING_NO_COUNT
+    %td.charging_no_count
+      %div{:style => "padding-top: 3em;"}
+  - when Yabitz::Model::Content::CHARGING_SHARED
+    %td.charging_shared
+      %div{:style => "padding-top: 3em;"}
+  - else
+    %td.charging_normal
+      %div{:style => "padding-top: 3em;"}
+  %td.service_name
+    %a{:href => "/ybz/hosts/service/#{service.oid}"}
+      &= service.name
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.service_content&= service.content.name
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}

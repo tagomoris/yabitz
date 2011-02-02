@@ -1,0 +1,94 @@
+-# coding: utf-8
+
+- if session[:toppage] and session[:toppage] == 'googlelike'
+  %div#toolbox_spacer_top
+  %div#toolbox
+    %div{:style => "float: right;"}
+      %a{:href => "/ybz/top_toggle"} 表示切替
+    %h3 Yabitz
+    %div{:style => "padding: 1em;"}
+      %form.mainform_googlelike{:name => "host_search_googlelike", :action => "/ybz/search", :method => "GET"}
+        %input{:type => "hidden", :name => "andor", :value => 'AND'}
+        %input{:type => "hidden", :name => "cond0", :value => 0}
+        %div.inputfield{:style => "text-align: center; font-size: 150%; margin-bottom: 1em;"}
+          %input.simple{:id => "googlelikeinput",:type => "text", :name => "value0", :size => 30}
+        %div.namefield{:style => "text-align: center;"}
+          %button.search_googlelike{:id => "dnsname_button", :title => "dnsname"}
+            %div{:style => "padding: 0.5em 1em 0.5em 1em;"} dns名検索
+          %button.search_googlelike{:id => "ipaddress_button", :title => "ipaddress"}
+            %div{:style => "padding: 0.5em 1em 0.5em 1em;"} IPアドレス検索
+          %button.search_googlelike{:id => "service_button", :title => "service"}
+            %div{:style => "padding: 0.5em 1em 0.5em 1em;"} サービス名検索
+          %br
+          %button.search_googlelike{:id => "rackunit_button", :title => "rackunit"}
+            %div{:style => "padding: 0.5em 1em 0.5em 1em;"} ラック位置検索
+          %button.search_googlelike{:id => "hwid_button", :title => "hwid"}
+            %div{:style => "padding: 0.5em 1em 0.5em 1em;"} HWID検索
+  %div#toolbox_spacer_bottom
+- else
+  %div#toolbox_spacer_top
+  %div#toolbox
+    %div{:style => "float: right;"}
+      %a{:href => "/ybz/top_toggle"} 表示切替
+    %h3 Yabitz
+    %div{:style => "padding: 1em;"}
+      %form.mainform{:name => "host_search_dns", :action => "/ybz/search", :method => "GET"}
+        %input{:type => "hidden", :name => "andor", :value => 'OR'}
+        %input{:type => "hidden", :name => "cond0", :value => 0}
+        %input{:type => "hidden", :name => "field0", :value => "dnsname"}
+        %table.inputitems
+          %tr
+            %td.inputfield{:style => "font-size: 150%; text-align: left; width: 60%;"}
+              %input.simple{:type => "text", :name => "value0", :size => 30}
+            %td.namefield
+              %button.host_search_dns
+                %div{:style => "width: 10em;"} dns名検索
+      %br
+      %form.mainform{:name => "host_search_ip", :action => "/ybz/search", :method => "GET"}
+        %input{:type => "hidden", :name => "andor", :value => 'OR'}
+        %input{:type => "hidden", :name => "cond0", :value => 0}
+        %input{:type => "hidden", :name => "field0", :value => "ipaddress"}
+        %table.inputitems
+          %tr
+            %td.inputfield{:style => "font-size: 150%; text-align: left; width: 60%;"}
+              %input.simple{:type => "text", :name => "value0", :size => 30}
+            %td.namefield
+              %button.host_search_dns
+                %div{:style => "width: 10em;"} IPアドレス検索
+      %br
+      %form.mainform{:name => "host_search_service", :action => "/ybz/search", :method => "GET"}
+        %input{:type => "hidden", :name => "andor", :value => 'OR'}
+        %input{:type => "hidden", :name => "cond0", :value => 0}
+        %input{:type => "hidden", :name => "field0", :value => "service"}
+        %table.inputitems
+          %tr
+            %td.inputfield{:style => "font-size: 150%; text-align: left; width: 60%;"}
+              %input.simple{:type => "text", :name => "value0", :size => 30}
+            %td.namefield
+              %button.host_search_dns
+                %div{:style => "width: 10em;"} サービス名検索
+      %br
+      %form.mainform{:name => "host_search_rackunit", :action => "/ybz/search", :method => "GET"}
+        %input{:type => "hidden", :name => "andor", :value => 'OR'}
+        %input{:type => "hidden", :name => "cond0", :value => 0}
+        %input{:type => "hidden", :name => "field0", :value => "rackunit"}
+        %table.inputitems
+          %tr
+            %td.inputfield{:style => "font-size: 150%; text-align: left; width: 60%;"}
+              %input.simple{:type => "text", :name => "value0", :size => 30}
+            %td.namefield
+              %button.host_search_dns
+                %div{:style => "width: 10em;"} ラック位置検索
+      %br
+      %form.mainform{:name => "host_search_hwid", :action => "/ybz/search", :method => "GET"}
+        %input{:type => "hidden", :name => "andor", :value => 'OR'}
+        %input{:type => "hidden", :name => "cond0", :value => 0}
+        %input{:type => "hidden", :name => "field0", :value => "hwid"}
+        %table.inputitems
+          %tr
+            %td.inputfield{:style => "font-size: 150%; text-align: left; width: 60%;"}
+              %input.simple{:type => "text", :name => "value0", :size => 30}
+            %td.namefield
+              %button.host_search_dns
+                %div{:style => "width: 10em;"} HWID検索
+  %div#toolbox_spacer_bottom

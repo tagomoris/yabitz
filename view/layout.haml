@@ -1,0 +1,89 @@
+-# coding: utf-8
+
+%html
+  - @user ||= nil
+  - @isadmin ||= false
+  - @hide_detailview ||= false
+  - @hide_selectionbox ||= false
+  - @hide_detailbox ||= false
+  - @copypastable ||= false
+  - @default_selected_all ||= false
+  %head
+    %meta{:'http-equiv' => "content-type", :content => "text/html; charset=utf-8"}
+    %link{:rel => "stylesheet", :href => "/ybz/yabitz.css", :type => "text/css"}
+    %link{:rel => "stylesheet", :href => "/css/jquery-ui.sunny.css", :type => "text/css"}
+    %link{:rel => "stylesheet", :href => "/css/droppy.css", :type => "text/css"}
+    - Yabitz::Plugin.get(:handler).each do |plugin|
+      - if plugin.respond_to?(:css)
+        :css
+          #{plugin.css}
+    %script{:type => "text/javascript", :src => "/js/jquery-1.4.2.min.js"}
+    %script{:type => "text/javascript", :src => "/js/jquery.form.js"}
+    %script{:type => "text/javascript", :src => "/js/jquery-ui.min.js"}
+    %script{:type => "text/javascript", :src => "/js/jquery.droppy.js"}
+    %script{:type => "text/javascript", :src => "/js/yabitz.js"}
+    - if @isadmin
+      %script{:type => "text/javascript", :src => "/js/admin.js"}
+    %script{:type => "text/javascript", :src => "/zeroclipboard/ZeroClipboard.js"}
+    - Yabitz::Plugin.get(:handler).each do |plugin|
+      - if plugin.respond_to?(:js)
+        :javascript
+          #{plugin.js}
+    - Yabitz::Plugin.get(:hostlinkparts).each do |plugin|
+      - if plugin.respond_to?(:javascript_parts)
+        :javascript
+          #{plugin.javascript_parts}
+    %title= (@page_title ? @page_title + " - " : "") + "Yabitz"
+  %body
+    %div{:id => 'confirm_dialog', :title => "確認", :style => "display: none;"}
+      %div{:id => 'dialogmessage', :style => "vertical-align: middle; text-align: center;"}
+        message
+    %div{:id => 'form_dialog', :title => "入力", :style => "display: none;"}
+      %form{:id => "dialogform", :method => "POST"}
+        %div.hidden
+          %input{:type => "text", :name => "dummy", :value => "dummy"}
+        %div{:id => 'dialogform_content', :style => "vertical-align: middle; text-align: center;"}
+          message
+    %div{:id => 'success_dialog', :title => "完了", :style => "display: none;"}
+      %div{:id => 'dialogmessage', :style => "vertical-align: middle; text-align: center;"}
+        message
+    %div{:id => 'error_dialog', :title => "エラー", :style => "display: none;"}
+      %div{:id => 'dialogmessage', :style => "vertical-align: middle; text-align: center;"}
+        message
+    %div#content
+      = partial :layout_top
+      - if @default_selected_all
+        %div.hidden.default_selected_all
+          select all selectables
+      - if @hide_detailview
+        %div#appview
+          %div#mainview_full
+            = yield
+      - else
+        %div#appview
+          %div#mainview
+            = yield
+          %div#detailview
+            - unless @hide_selectionbox
+              %div#selectionbox
+                - if @copypastable
+                  %div{:id => "copypasterbox", :style => "float: right; text-align: right; font-size: 14px; display: none;"}
+                    %ul{:style => "list-style-type: none;"}
+                      %li.copypaster#copypaster_s
+                        %a{:href => '#'} [S]
+                      %li.copypaster#copypaster_m
+                        %a{:href => '#'} [M]
+                      %li.copypaster#copypaster_l
+                        %a{:href => '#'} [L]
+                選択：
+                %span#selection_number
+                  なし
+                %div
+                  %ul.valueslist#selections
+            - unless @hide_detailbox
+              %div#detailboxarea
+                %div#detailbox
+                %div#notesbox
+      %div{:id => "break", :style => "clear: both; padding-bottom: 1em;"}
+      %div#appfooter
+        = Yabitz.config().credit_html()

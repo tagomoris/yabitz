@@ -1,0 +1,46 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %div 表示： サービス一覧
+  - if @isadmin
+    %div
+      選択したサービスへの操作: 
+      %select.admin_operations#service_operation_list
+        %option{:value => 'nonedefault'} 操作を選択してください
+        %option{:value => 'none', :disabled => true} -- ホストの追加 --
+        %option{:value => 'add_host'} 選択したサービスにホストを追加
+        %option{:value => 'none', :disabled => true} -- コンテンツの変更 --
+        %option{:value => 'change_content'} 選択したサービスを他のコンテンツに移動
+        %option{:value => 'none', :disabled => true} -- データ削除 --
+        %option{:value => 'delete_records'} 選択したサービスのデータを消去
+%div#toolbox_spacer_bottom
+%div#maincontents
+  - if @isadmin
+    %form.inline.smartadd{:name => 'create_service', :action => '/ybz/service/create', :method => "POST"}
+      %table#servicecreate
+        %tr.service_item
+          %td.td_line_head
+            %div{:style => "padding-top: 3em; padding-left: 0; padding-right: 0;"}
+          %td.service_name{:style => "padding-left: 1em;"}
+            名称: 
+            %input.smartinput{:type => 'text', :size => 16, :name => 'name'}
+          %td.td_padding_narrow
+            %img{:src => "/images/1x1.gif"}
+          %td.service_content
+            %select{:name => 'content'}
+              - Yabitz::Model::Content.all(:sorted => true).each do |c|
+                %option{:value => c.oid}&= c.to_s
+          %td.td_padding_narrow
+            %img{:src => "/images/1x1.gif"}
+          %td.td_base
+            ML:
+            %input.smartinput{:type => 'text', :size => 16, :name => 'mladdress'}
+          %td.td_padding_narrow
+            %img{:src => "/images/1x1.gif"}
+          %td.td_base
+            %input{:type => 'image', :height => 24, :width => 24, :src => '/images/adding.png'}
+          %td.td_line_term
+            %img{:src => "/images/1x1.gif"}
+  %table#servicelist
+    = partial :service, :collection => @services

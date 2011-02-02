@@ -1,0 +1,41 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %h3 操作タグ一覧
+  %div
+    %a{:href => "/ybz/operations"} 最近の操作タグ一覧
+  %div
+    %div 範囲日時指定
+    %div{:style => "padding-left: 2em;"}
+      - startdate_val = (@start_date ? h(@start_date) : "")
+      - enddate_val = (@end_date ? h(@end_date) : "")
+      先頭(yyyymmdd)
+      %input.simple{:type => "text", :name => "start_date", :value => h(startdate_val)}
+      %br
+      末尾(yyyymmdd)
+      %input.simple{:type => "text", :name => "end_date", :value => h(enddate_val)}
+      %br
+      %button{:id => "opetaglist", :style => "width: 15em;"} 操作タグを範囲検索
+%div#toolbox_spacer_bottom
+%div#maincontents
+  %table#opetaglist
+    - @tags_collection.each do |date, tags|
+      %tr.opetag_item
+        %td.td_line_head{:style => "background-color: #ffcccc; width: 20px;"}
+          %img{:src => "/images/1x1.gif"}
+        %td.td_base{:colspan =>2, :style => "background-color: #ffcccc;"}
+          %strong&= date
+        %td.td_line_term{:style => "background-color: #ffcccc;"}
+          %img{:src => "/images/1x1.gif"}
+      - tags.sort.reverse.each do |tag|
+        %tr.opetag_item.selectable{:id => escape(h(tag))}
+          %td.td_line_head
+            %div.header_status
+              %img{:src => "/images/1x1.gif"}
+          %td.opetag_base
+            %a{:href => "/ybz/host/operation/" + tag}&= tag
+          - datetime = (tag =~ /\A(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})/ ? $1 + '-' + $2 + '-' + $3 + ' ' + $4 + ':' + $5 : "")
+          %td.opetag_date&= datetime
+          %td.td_line_term
+            %img{:src => "/images/1x1.gif"}

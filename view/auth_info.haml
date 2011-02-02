@@ -1,0 +1,34 @@
+-# coding: utf-8
+
+%tr.authinfo_item.selectable{:id => "#{auth_info.oid}"}
+  - if auth_info.valid?
+    %td.authinfo_status_valid
+      %div.header_status
+  - else
+    %td.authinfo_status_invalid
+      %div.header_status
+  %td.authinfo_selector
+    %input{:class => "check_#{auth_info.oid}", :type => "checkbox", :value => "check_#{auth_info.oid}"}
+  %td.authinfo_name
+    &= auth_info.name
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.authinfo_fullname
+    &= auth_info.fullname
+    %img{:src => "/images/1x1.gif"}
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.authinfo_priv
+    - if auth_info.admin?
+      admin
+    - else
+      normal
+  %td.td_padding_narrow
+    %img{:src => "/images/1x1.gif"}
+  %td.authinfo_valid
+    - if auth_info.valid?
+      有効
+    - else
+      無効
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}

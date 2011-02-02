@@ -1,0 +1,22 @@
+-# coding: utf-8
+
+%tr.ipaddress_item.selectable{:id => "#{ipaddress.quoted_address}", :title => h(ipaddress.address)}
+  - if ipaddress.holder
+    %td.ipaddress_holder
+      %img{:src => "/images/1x1.gif"}
+  - elsif ipaddress.hosts_by_id.size < 1
+    %td.ipaddress_blank
+      %img{:src => "/images/1x1.gif"}
+  - else
+    %td.ipaddress_normal
+      %img{:src => "/images/1x1.gif"}
+  %td.ipaddress_address&= ipaddress.address
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.ipaddress_memo
+    - if ipaddress.notes.nil? or ipaddress.notes.empty?
+      %img{:src => "/images/1x1.gif"}
+    - else
+      [メモあり]
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}

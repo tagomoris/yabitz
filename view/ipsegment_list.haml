@@ -1,0 +1,38 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %p 
+    条件：
+    &= @page_title
+  - if @isadmin
+    %div
+      選択したセグメントへの操作: 
+      %select.admin_operations#ipsegment_operation_list
+        %option{:value => 'nonedefault'} 操作を選択してください
+        %option{:value => 'none', :disabled => true} -- データ削除 --
+        %option{:value => 'delete_records'} 選択したセグメントを消去
+%div#toolbox_spacer_bottom
+%div#maincontents
+  - if @isadmin
+    %form.inline.smartadd{:name => 'create_ipsegment', :action => '/ybz/ipsegment/create', :method => "POST"}
+      %table#ipsegmentcreate
+        %tr.ipaddress_item
+          %td.td_line_head
+            %div{:style => "padding-top: 3em; padding-left: 0; padding-right: 0;"}
+          %td.ipaddress_address{:style => "padding-left: 1em;"}
+            ネットワークアドレス: 
+            %input.smartinput{:type => 'text', :size => 20, :name => 'address'}
+          %td.td_padding_narrow
+            %img{:src => "/images/1x1.gif"}
+          %td.td_base
+            マスク長:
+            %input.smartinput{:type => 'text', :size => 3, :name => 'mask'}
+          %td.td_padding_narrow
+            %img{:src => "/images/1x1.gif"}
+          %td.td_base
+            %input{:type => 'image', :height => 24, :width => 24, :src => '/images/adding.png'}
+          %td.td_line_term
+            %img{:src => "/images/1x1.gif"}
+  %table#iplist
+    = partial :ipsegment, :collection => @ipsegments

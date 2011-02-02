@@ -1,0 +1,87 @@
+-# coding: utf-8
+- categorized = categorize_host(host_list)
+- Yabitz::Model::Host::STATUS_LIST.each do |state|
+  - next if categorized[state][:list].size < 1
+  - set = categorized[state]
+  = partial :host, :collection => set[:list]
+  %tr.host_category_summary
+    - case state
+    - when Yabitz::Model::Host::STATUS_UNDER_DEV
+      %td.host_status_under_dev
+        %div.header_status
+    - when Yabitz::Model::Host::STATUS_NO_COUNT
+      %td.host_status_no_count
+        %div.header_status
+    - when Yabitz::Model::Host::STATUS_SUSPENDED
+      %td.host_status_suspended
+        %div.header_status
+    - when Yabitz::Model::Host::STATUS_STANDBY
+      %td.host_status_standby
+        %div.header_status
+    - when Yabitz::Model::Host::STATUS_REMOVING
+      %td.host_status_removing
+        %div.header_status
+    - when Yabitz::Model::Host::STATUS_REMOVED
+      %td.host_status_removed
+        %div.header_status
+    - when Yabitz::Model::Host::STATUS_MISSING
+      %td.host_status_missing
+        %div.header_status
+    - when Yabitz::Model::Host::STATUS_OTHER
+      %td.host_status_other
+        %div.header_status
+    - else
+      %td.host_status_in_service
+        %div{:style => "padding-top: 3em;"}
+    %td.td_base{:style => "font-size: 80%;"}
+      %img{:src => "/images/1x1.gif"}
+    %td.td_base{:colspan => 2, :style => "font-size: 80%;"}
+      %ul{:style => "list-style-type: none;"}
+        - set[:hw].keys.each do |hwname|
+          - next if set[:hw][hwname] < 1
+          %li
+            &= hwname + ': ' + set[:hw][hwname].to_s
+    %td.td_padding
+      %img{:src => "/images/1x1.gif"}
+    %td.td_base{:colspan => 4, :style => "font-size: 80%;"}
+      %ul{:style => "list-style-type: none;"}
+        - set[:os].keys.each do |osname|
+          - next if set[:os][osname] < 1
+          %li
+            &= osname + ': ' + set[:os][osname].to_s
+    %td.td_padding_narrow
+      %img{:src => "/images/1x1.gif"}
+    %td.td_base{:style => "text-align: center;"}
+      = Yabitz::Model::Host.status_title(state)
+      %br
+      = set[:list].size.to_s + "ホスト"
+    %td.td_line_term
+      %img{:src => "/images/1x1.gif"}
+- set = categorized['total']
+%tr.host_category_summary_total
+  %td.host_status_in_service
+    %div{:style => "padding-top: 3em;"}
+  %td.td_base{:style => "font-size: 80%;"}
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 2, :style => "font-size: 80%;"}
+    %ul{:style => "list-style-type: none;"}
+      - set[:hw].keys.each do |hwname|
+        - next if set[:hw][hwname] < 1
+        %li
+          &= hwname + ': ' + set[:hw][hwname].to_s
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:colspan => 4, :style => "font-size: 80%;"}
+    %ul{:style => "list-style-type: none;"}
+      - set[:os].keys.each do |osname|
+        - next if set[:os][osname] < 1
+        %li
+          &= osname + ': ' + set[:os][osname].to_s
+  %td.td_padding_narrow
+    %img{:src => "/images/1x1.gif"}
+  %td.td_base{:style => "text-align: center;"}
+    合計
+    %br
+    = host_list.size.to_s + "ホスト"
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}

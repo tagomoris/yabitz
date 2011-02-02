@@ -1,0 +1,35 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %h3
+    &= cond
+  %div{:style => "margin-left: 2em;"}
+    %div
+      %a{:href => "/ybz/hosts/service/#{@srv.oid}"} ホスト一覧
+    - if @srv.contact
+      %div
+        %a{:href => "/ybz/contact/#{@srv.contact.oid}"} 連絡先(#{@srv.contact.label})
+    - else
+      %div 連絡先：指定なし
+%div#toolbox_spacer_bottom
+%div#maincontents
+  %div.mainviewboxouter
+    %div.mainviewbox
+      %div.fieldvalue
+        %span.field サービス名:
+        %span.value&= @srv.name
+      %div.fieldvalue
+        %span.field コンテンツ名:
+        %span.value
+          %a{:href => "/ybz/content/#{@srv.content.oid}"}&= @srv.content.name
+          (#{@srv.content.charging_title})
+      %div.fieldvalue
+        %span.field ML:
+        %span.value&= @srv.mladdress
+      %div.fieldinline サービスURL:
+      %ul.valueslist
+        - @srv.urls.each do |item|
+          %li.valueitem&= item.url
+      %div.field メモ
+      %div.value&= @srv.notes

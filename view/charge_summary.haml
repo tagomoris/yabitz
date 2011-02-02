@@ -1,0 +1,141 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %div ユニット数集計
+%div#toolbox_spacer_bottom
+%table.maintable
+  %tr.charge_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th ホスト状態別
+    %th ホスト数
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - Yabitz::Model::Host::STATUS_LIST.each do |status|
+    %tr.charge_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.charge_host_status&= Yabitz::Model::Host.status_title(status)
+      %td.charge_hosts{:style => "text-align: center;"}&= @status[status][:hosts]
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+  %tr
+    %td.td_line_head
+      %img{:src => "/images/1x1.gif"}
+    %td.charge_host_status 合計
+    %td.charge_hosts{:style => "text-align: center;"}&= @status[:total][:hosts]
+    %td.td_line_term
+      %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.charge_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th ホスト種類別
+    %th ホスト数
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - Yabitz::HostType.names.each do |type|
+    %tr.charge_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.charge_host_type&= type
+      %td.charge_hosts{:style => "text-align: center;"}&= @types[type][:hosts]
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+  %tr
+    %td.td_line_head
+      %img{:src => "/images/1x1.gif"}
+    %td.charge_host_status 合計
+    %td.charge_hosts{:style => "text-align: center;"}&= @types[:total][:hosts]
+    %td.td_line_term
+      %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr{:style => "background-color: red; color: white; font-weight: bold;"}
+    %td.td_base{:style => "text-align: center; padding-top: 10px; padding-bottom: 10px;"} 以下 #{Yabitz::Model::Host.status_title(Yabitz::Model::Host::STATUS_IN_SERVICE)} のみ
+%table#charginglist
+  %tr.charge_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th 課金設定
+    %th ホスト数
+    %th 物理U数
+    %th 課金U数
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    - Yabitz::Model::Content::CHARGING_LABELS.each do |label|
+      %tr.charge_item
+        %td.td_line_head
+          %img{:src => "/images/1x1.gif"}
+        %td.charge_charging&= Yabitz::Model::Content.charging_title(label)
+        %td.charge_hosts&= @chargings[label][:hosts]
+        %td.charge_punits&= @chargings[label][:punits]
+        %td.charge_cunits&= roundoff(@chargings[label][:cunits], 1)
+        %td.td_line_term
+          %img{:src => "/images/1x1.gif"}
+    %tr
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.charge_charging 合計
+      %td.charge_hosts&= @chargings[:total][:hosts]
+      %td.charge_punits&= @chargings[:total][:punits]
+      %td.charge_cunits&= roundoff(@chargings[:total][:cunits], 1)
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table#chargedeptlist
+  %tr.charge_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th 部署名
+    %th ホスト
+    %th 物理U
+    %th 課金U
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    - @depts.sort.each do |d|
+      - if @dept_counts[d.oid][:hosts] > 0
+        %tr.charge_item
+          %td.td_line_head
+            %img{:src => "/images/1x1.gif"}
+          %td.charge_dept_name&= d.name
+          %td.charge_hosts&= @dept_counts[d.oid][:hosts]
+          %td.charge_punits&= @dept_counts[d.oid][:punits]
+          %td.charge_cunits&= roundoff(@dept_counts[d.oid][:cunits], 1)
+          %td.td_line_term
+            %img{:src => "/images/1x1.gif"}
+%table#chargelist
+  %tr.charge_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th コード
+    %th 部署名
+    %th コンテンツ名
+    %th
+    %th ホスト
+    %th 物理U
+    %th 課金U
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @contents.sort{|a,b| ((a.charging <=> b.charging) != 0) ? (a.charging <=> b.charging) : (((a.dept_by_id <=> b.dept_by_id) != 0) ? (a.dept <=> b.dept) : (a <=> b))}.each do |c|
+    - if @content_counts[c.oid][:hosts] > 0
+      %tr.charge_item.selectable{:id => "#{c.oid}", :title => h(c.name)}
+        - case c.charging
+        - when Yabitz::Model::Content::CHARGING_NO_COUNT
+          %td.charging_no_count
+            %div{:style => "padding-top: 3em;"}
+        - when Yabitz::Model::Content::CHARGING_SHARED
+          %td.charging_shared
+            %div{:style => "padding-top: 3em;"}
+        - else
+          %td.charging_normal
+            %div{:style => "padding-top: 3em;"}
+        %td.charge_code&= c.code
+        %td.charge_dept_name_mini&= c.dept.name
+        %td.charge_content_name&= c.name
+        %td.td_padding_narrow
+          %img{:src => "/images/1x1.gif"}
+        %td.charge_hosts&= @content_counts[c.oid][:hosts]
+        %td.charge_punits&= @content_counts[c.oid][:punits]
+        %td.charge_cunits&= roundoff(@content_counts[c.oid][:cunits], 1)
+        %td.td_line_term
+          %img{:src => "/images/1x1.gif"}

@@ -1,0 +1,39 @@
+-# coding: utf-8
+
+%div#detailbox
+  %form.identity
+    %input{:type => "hidden", :name => "oid", :value => @auth_info.oid}
+    %input{:type => "hidden", :name => "type", :value => "auth_info"}
+  %h3 ユーザ認証情報
+  %div.fieldvalue
+    %span.field ユーザ名:
+    %span.value
+      &= @auth_info.name
+  %div.fieldvalue
+    %span.field 氏名:
+    %span.value
+      &= @auth_info.fullname
+  %div.fieldvalue
+    %span.field admin権限:
+    %span.value
+      - if @auth_info.admin?
+        あり
+      - else
+        なし
+      - if @isadmin
+        %form.inline.toggle_form{:name => "toggleAdmin", :method => "POST", :action => "/ybz/auth_info/#{@auth_info.oid}"}
+          %input{:type => "hidden", :name => "field", :value => "priv"}
+          %input{:type => "hidden", :name => "operation", :value => "toggle"}
+          %input.togglebutton{:type => "image", :src => "/images/check.png", :onclick => 'return false;', :height => 20, :width => 20, :alt => "+/-"}
+  %div.fieldvalue
+    %span.field 状態:
+    %span.value
+      - if @auth_info.valid?
+        有効
+      - else
+        無効
+      - if @isadmin
+        %form.inline.toggle_form{:name => "toggleValid", :method => "POST", :action => "/ybz/auth_info/#{@auth_info.oid}"}
+          %input{:type => "hidden", :name => "field", :value => "valid"}
+          %input{:type => "hidden", :name => "operation", :value => "toggle"}
+          %input.togglebutton{:type => "image", :src => "/images/check.png", :onclick => 'return false;', :height => 20, :width => 20, :alt => "+/-"}

@@ -1,0 +1,45 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %div 簡易検索
+  %div
+    条件：
+    &= cond
+  %div 検索対象(完全一致)：サービスURL、HWID、タグ
+  %div 検索対象(正規表現)：サービス、DNS名、IPアドレス、ラック位置
+  %div
+    選択：
+    %button#select_on_all すべて選択
+    %button#select_off_all 選択をクリア
+    %button#selected_hosts 選択ホストのみ表示
+    %button#hosts_history 選択ホストの変更履歴
+  - if @isadmin
+    = haml :host_operations
+%div#toolbox_spacer_bottom
+%div#maincontents
+  - if @service_results.size > 0 and @service_results.map(&:last).flatten.size > 0
+    - @service_results.each do |match_condition, match_services|
+      - if match_services.size > 0
+        %table#servicelist
+          %tr.service.outline.smartsearch_condition
+            %td.td_line_head
+              %div{:style => "padding-top: 3em;"}
+                %img{:src => "/images/1x1.gif"}
+            %td.td_base{:colspan => 3, :style => "font-style: bold;"}
+              &= match_condition
+            %td.td_line_term
+              %img{:src => "/images/1x1.gif"}
+          = partial :service, :collection => match_services
+  %table#hostlist
+    - @results.each do |match_condition, match_hosts|
+      - if match_hosts.size > 0
+        %tr.host.outline.smartsearch_condition
+          %td.td_line_head
+            %div{:style => "padding-top: 3em;"}
+              %img{:src => "/images/1x1.gif"}
+          %td.td_base{:colspan => 10, :style => "font-style: bold;"}
+            &= match_condition
+          %td.td_line_term
+            %img{:src => "/images/1x1.gif"}
+        = partial :host, :collection => match_hosts
