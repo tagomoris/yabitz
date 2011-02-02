@@ -72,6 +72,7 @@ module Yabitz
     def self.plugin_patterns
       [
        File.expand_path(File.dirname(__FILE__)) + '/plugin/*.rb',
+       File.expand_path(File.dirname(__FILE__)) + '/plugin/*_plugins/*.rb',
       ]
     end
 
