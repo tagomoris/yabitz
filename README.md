@@ -47,6 +47,7 @@
 * Web API経由でのホスト情報の更新
 
 動作環境は以下の通りです。
+
 * サーバ環境
     * Ruby 1.9.2 (1.9.1以前および1.8系では動作しません)
         * sinatra, haml/sass, ruby-ldap, ruby-mysql, rspec
@@ -68,11 +69,14 @@
 ### 言語、ミドルウェア、ライブラリ
 
 適当なLinuxサーバで以下のものをインストールします。
+
 * Ruby 1.9.2
 * MySQL 5.1.x (or 5.5 ?)
+
 MySQLにおける認証設定は適宜行ってください。
 
 また以下のRuby Gemsをインストールします。(全て最新のもので良いはず)
+
 * sinatra
 * haml
 * ruby-ldap
@@ -182,6 +186,7 @@ yabitz の動作設定を config プラグインとして作成します。と�
     $ ruby scripts/instant/register_user.rb HOSTNAME USERNAME [-p]
 
 このスクリプトを実行すると、以下の情報の入力を求められます。
+
 * ユーザ名
 * パスワード
 * メールアドレス (省略可)
