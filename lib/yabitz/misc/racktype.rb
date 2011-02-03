@@ -24,6 +24,7 @@ module Yabitz::RackTypes
 
   def self.search_by_unit(rackunit_label)
     self.list.each do |p|
+      Kernel.p p.rackunit_label_pattern
       return p if rackunit_label =~ p.rackunit_label_pattern
     end
     nil
