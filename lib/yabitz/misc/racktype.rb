@@ -11,6 +11,7 @@ module Yabitz::RackTypes
   end
   
   def self.default
+    raise RuntimeError, "no one rack type exists." unless self.list.first
     self.list.first
   end
 
