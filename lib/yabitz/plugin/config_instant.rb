@@ -11,9 +11,9 @@ module Yabitz::Plugin
 
     def self.extra_load_path(env)
       if env == :production
-        ['~/Documents/stratum']
+        ['~/Documents/Stratum']
       else
-        ['~/Documents/stratum']
+        ['~/Documents/Stratum']
       end
     end
 
