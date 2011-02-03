@@ -71,7 +71,7 @@ module Yabitz
       end
 
       def self.has_administrator?
-        self.query(:priv => PRIV_ADMIN).size > 0
+        self.query(:priv => PRIV_ADMIN).select{|x| x.name != 'batchmaker'}.size > 0
       end
 
       def set_admin
