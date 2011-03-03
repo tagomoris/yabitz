@@ -81,34 +81,35 @@
           %li.valueitem&= v
   - if @user
     %form.inline.field_edit_form{:name => "hostfieldedit", :action => "/ybz/host/#{@host.oid}", :method => "POST", :onsubmit => "return false;"}
-      %div.fieldvalue.clickableitem
-        %div.hidden
-          %input{:type => "text", :name => "dummy", :value => ""}
-        %input{:type => "hidden", :name => "field", :value => "tagchain"}
-        %input{:type => "hidden", :name => "target_id", :value => @host.id}
-        %input{:type => "hidden", :name => "operation", :value => "edit"}
-        %div.field タグ:
-        %div.dataview{:style => "margin-left: 1em;", :title => h(@host.tagchain.to_s)}
-          - if @host.tagchain and @host.tagchain.tagchain.size > 0
-            - @host.tagchain.tagchain.each do |tag|
-              = anchored_tag(tag, @host)
-              &= ' '
-          - else
-            なし
-          %div.dataeditbutton
-            %img.button.clickablebutton{:src => "/images/edit.png", :alt => "edit"}
-        %div.dataedit{:style => "margin-left: 1em;"}
-          %input{:type => "text", :name => "value", :value => h(@host.tagchain.to_s)}
+      %div.hidden
+        %input{:type => "text", :name => "dummy", :value => ""}
+      %input{:type => "hidden", :name => "field", :value => "tagchain"}
+      %input{:type => "hidden", :name => "maptype", :value => "list"}
+      %input{:type => "hidden", :name => "target_id", :value => @host.id}
+      %input{:type => "hidden", :name => "operation", :value => "edit"}
+      %div.field
+        タグ
+        %img.button.itemadd{:src => "/images/adding.png", :alt => "+"}
+      %ul.valueslist
+        - vnum = 0
+        - values = @host.tagchain.tagchain
+        - values.each do |v|
+          - vnum += 1
+          %li.valueitem.clickableitem
+            %div.dataview{:title => h(v)}
+              = anchored_tag(v, @host)
+              %div.dataeditbutton
+                %img.button.clickablebutton{:src => "/images/edit.png", :alt => "edit"}
+            %div.dataedit
+              %input{:type => "text", :name => "value#{vnum}", :value => h(v)}
+        %li.valueitem.addinput
+          %div.dataedit
+            %input{:type => "text", :name => "value_new"}
   - else
-    %div.field
-      タグ:
-    %div.value
-      - if @host.tagchain and @host.tagchain.tagchain.size > 0
-        - @host.tagchain.tagchain.each do |tag|
-          = anchored_tag(tag, @host)
-          &= ' '
-      - else
-        なし
+    %div.field タグ
+    %ul.valueslist
+      - @host.tagchain.tagchain.each do |v|
+        %li.valueitem= anchored_tag(v, @host)
   - if @user
     %form.inline.field_edit_form{:name => "hostfieldedit", :action => "/ybz/host/#{@host.oid}", :method => "POST", :onsubmit => "return false;"}
       %div.fieldvalue.memoitem
