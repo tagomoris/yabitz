@@ -996,8 +996,15 @@ EOT
           g.tagchain.save
           g.save
 
-          unless hv_host.dnsnames.map(&:dnsname).include?('p.' + g.dnsnames.first.dnsname)
-            hv_host.dnsnames += [Yabitz::Model::DNSName.query_or_create(:dnsname => 'p.' + g.dnsnames.first.dnsname)]
+          p_dnsname = Yabitz::Model::DNSName.query_or_create(:dnsname => 'p.' + g.dnsnames.first.dnsname)
+          unless hv_host.dnsnames.map(&:oid).include?(p_dnsname.oid)
+            hv_host.dnsnames += [p_dnsname]
+          end
+          p_dnsname.hosts.select{|h| h.hosttype.hypervisor? and not h.children_by_id.include?(g.oid)}.each do |pre_hv|
+            pre_hv.dnsnames = pre_hv.dnsnames.select{|dns| dns.oid != p_dnsname.oid}
+            pre_hv.tagchain.tagchain += [tag]
+            pre_hv.tagchain.save
+            pre_hv.save
           end
         end
         hv_host.tagchain.tagchain += [tag]
