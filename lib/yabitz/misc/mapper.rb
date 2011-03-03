@@ -80,9 +80,16 @@ module Yabitz
         vkeys = value_keys.select{|k| k =~ /\Avalue\d+\Z/}.map{|k| k =~ /\Avalue(\d+)\Z/ and $1.to_i}.sort()
         new_values_s = vkeys.map{|i| request.params["value#{i}"].strip}.select{|vstr| vstr.size > 0}
         addvalue = request.params["value_new"].strip
-        add_value_s = (addvalue && addvalue.size > 0) ? addvalue : nil
 
-        generator.call(new_values_s, add_value_s)
+        if request.params['maptype'] and request.params['maptype'] == 'list'
+          if addvalue and addvalue.size > 0
+            new_values_s.push(addvalue)
+          end
+          generator.call_once(new_values_s)
+        else
+          add_value_s = (addvalue && addvalue.size > 0) ? addvalue : nil
+          generator.call(new_values_s, add_value_s)
+        end
       end
     end
   end
