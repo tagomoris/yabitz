@@ -1483,7 +1483,7 @@ EOT
       @units = {}
       racktype = Yabitz::RackTypes.search(@rack.label)
       @hosts.each do |host|
-        next if host.hosttype.virtualmachine?
+        next if host.hosttype.virtualmachine? or host.status == Yabitz::Model::Host::STATUS_REMOVED
         @units[host.rackunit.rackunit] = host
         if host.hwinfo and host.hwinfo.unit_height > 1
           racktype.upper_rackunit_labels(host.rackunit.rackunit, host.hwinfo.unit_height - 1).each{|pos| @units[pos] = host}
