@@ -9,7 +9,7 @@ module Yabitz::Plugin
       [:auth, :member]
     end
     def self.plugin_priority
-      10
+      0
     end
 
     DB_HOSTNAME = "localhost"
