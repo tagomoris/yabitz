@@ -6,6 +6,8 @@
     %input{:type => "hidden", :name => "type", :value => "contactmember"}
   %h3
     連絡先メンバ
+    %div{:style => "float: right; text-align: right; vertical-align: bottom; font-size: 50%;"}
+      %a{:href => "/ybz/contactmember/#{@contactmember.oid}"} [link]
   = field_editable 'contactmember', @contactmember, :text, :name, "氏名", @contactmember.name, "未入力", :everybody => true
   = field_editable 'contactmember', @contactmember, :text, :telno, "電話", @contactmember.telno, "未入力", :everybody => true
   = field_editable 'contactmember', @contactmember, :text, :mail, "メール", @contactmember.mail, "未入力", :everybody => true

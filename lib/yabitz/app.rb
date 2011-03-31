@@ -2286,7 +2286,9 @@ EOT
     when '.tr.ajax'
       haml :contactmember, :layout => false, :locals => {:contactmember => @contactmember}
     else
-      raise NotImplementedError, "No plan to implement here"
+      @contactmembers = [@contactmember]
+      @page_title = "連絡先メンバ表示：" + @contactmember.name
+      haml :contactmember_list
     end
   end
 
