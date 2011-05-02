@@ -90,4 +90,8 @@
           %td.td_base{:colspan => 10, :style => "font-style: bold;"} 件数: #{@hosts.size}
           %td.td_line_term
             %img{:src => "/images/1x1.gif"}
-        = haml :host_list, :locals => {:host_list => @hosts}
+        -# magic number 200 for sort
+        - if @hosts.size < 200
+          = haml :host_list, :locals => {:host_list => @hosts.sort}
+        - else
+          = haml :host_list, :locals => {:host_list => @hosts}

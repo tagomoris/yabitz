@@ -42,4 +42,8 @@
             &= match_condition
           %td.td_line_term
             %img{:src => "/images/1x1.gif"}
-        = partial :host, :collection => match_hosts
+        -# magic number 200 for sorting
+        - if match_hosts.size < 200
+          = partial :host, :collection => match_hosts.sort
+        - else
+          = partial :host, :collection => match_hosts
