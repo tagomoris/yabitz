@@ -16,10 +16,10 @@ $(function(){
         $('#detailbox').hide();
         clear_selections();
     });
-    $('button#selected_hosts').click(function(e){show_selected_hosts(e)});
-    $('button#hosts_history').click(function(e){show_hosts_history(e)});
-    $('button#hosts_diff').click(function(e){show_hosts_diff(e)});
-    $('button#opetaglist').click(function(e){show_operations(e)});
+    $('button#selected_hosts').click(function(e){show_selected_hosts(e);});
+    $('button#hosts_history').click(function(e){show_hosts_history(e);});
+    $('button#hosts_diff').click(function(e){show_hosts_diff(e);});
+    $('button#opetaglist').click(function(e){show_operations(e);});
 
     $('div#copypasterlinks').find('.copypaster').click(function(e){
         copypastable_all_hosts($(e.target), window.location.href);
@@ -49,17 +49,17 @@ $(function(){
     $('.show_editpain2').click(function(event){$('#maincontents').addClass('hidden'); $('#editpain2').removeClass('hidden');});
 
     // event for cloneable items add button
-    $('div.listclone').click(function(e){clone_cloneable_item(e)});
+    $('div.listclone').click(function(e){clone_cloneable_item(e);});
 
     // events for entry-creation (host, contactmember, contact)
-    $('form.mainform').submit(function(e){commit_main_form(e)});
+    $('form.mainform').submit(function(e){commit_main_form(e);});
     $('button.mainform_commit').click(function(e){$(e.target).closest('form.mainform').submit();});
 
     // events for edit contact (member-add/remove, re-ordering)
 
 
     // top page search
-    $('#googlelikeinput').keypress(function(e){if(e.which == 13){e.preventDefault(); return false;};});
+    $('#googlelikeinput').keypress(function(e){if(e.which == 13){e.preventDefault(); return false;} return true;});
     $('button.search_googlelike').click(function(e){
         var button = $(e.target).closest('button.search_googlelike');
         var param = button.closest('form.mainform_googlelike').formSerialize() + '&field0=' + button.attr('title');
@@ -69,8 +69,8 @@ $(function(){
     });
 
     // admin events for mainview
-    $('form.smartadd').submit(function(e){commit_smartadd_form(e)});
-    $('select.admin_operations').change(function(e){dispatch_admin_operation(e)});
+    $('form.smartadd').submit(function(e){commit_smartadd_form(e);});
+    $('select.admin_operations').change(function(e){dispatch_admin_operation(e);});
 
     if ($('div.default_selected_all').size() > 0) {
         $('button#select_on_all').click();
@@ -123,17 +123,17 @@ if (!('bind_events_detailbox_addons' in window)) {
 }
 
 function bind_events_detailbox() {
-    $('.clickableitem,.dataview,.dataupdown,.orderedit').mouseover(function(e){highlight_editable_item(e)});
-    $('.clickableitem,.dataview,.dataupdown,.orderedit').mouseout(function(e){un_highlight_editable_item(e)});
+    $('.clickableitem,.dataview,.dataupdown,.orderedit').mouseover(function(e){highlight_editable_item(e);});
+    $('.clickableitem,.dataview,.dataupdown,.orderedit').mouseout(function(e){un_highlight_editable_item(e);});
 
-    $('div.clickablelabel,div.clickablebutton').click(function(e){show_editable_item(e)});
-    $('div.memoeditbutton').click(function(e){show_editable_item(e)});
+    $('div.clickablelabel,div.clickablebutton').click(function(e){show_editable_item(e);});
+    $('div.memoeditbutton').click(function(e){show_editable_item(e);});
 
-    $('img.itemadd').click(function(e){show_add_item(e)});
+    $('img.itemadd').click(function(e){show_add_item(e);});
     $('input.togglebutton').click(function(e){e.preventDefault(); $(e.target).closest('form').submit(); return false;});
 
-    $('form.field_edit_form').submit(function(e){commit_field_change(e)});
-    $('form.toggle_form').submit(function(e){commit_toggle_form(e)});
+    $('form.field_edit_form').submit(function(e){commit_field_change(e);});
+    $('form.toggle_form').submit(function(e){commit_toggle_form(e);});
 
     if (('bind_events_detailbox_addons' in window) && bind_events_detailbox_addons.length > 0) {
         $.each(bind_events_detailbox_addons, function(){ this(); });
@@ -144,7 +144,7 @@ function commit_main_form(event){
     var form = $(event.target);
     if (form.attr('name') == 'host_create') {
         commit_mainview_form($(event.target), "ホスト追加に成功", function(){
-            location.href = '/ybz/hosts/service/' + form.find('select[name="service"]').val()
+            location.href = '/ybz/hosts/service/' + form.find('select[name="service"]').val();
         });
     }
     else if (form.attr('name') == 'host_search') {
@@ -226,21 +226,21 @@ function show_hosts_diff(event){
     if (before != undefined) {
         url = url + '/' + before;
     }
-    window.location.href =  url
+    window.location.href =  url;
 };
 
 function show_operations(event){
     var start = $("input[name='start_date']").val();
     var end = $("input[name='end_date']").val();
-    var url = "/ybz/operations"
+    var url = "/ybz/operations";
     if (start != null && end != null) {
         if (start.length != 8 || end.length != 8) {
             alert("日付入力は8桁 yyyymmdd で入力してください");
             return false;
         }
-        url = url + '/' + start + '/' + end
+        url = url + '/' + start + '/' + end;
     }
-    window.location.href = url
+    window.location.href = url;
 };
 
 function load_page(url) { window.location.href = url; };
@@ -286,7 +286,7 @@ function show_form_dialog(url, form_content, success_callback, cancel_callback){
                         dialogbox.dialog('close');
                         show_error_dialog(xhr.responseText, cancel_callback);
                     }
-                })
+                });
             },
             'キャンセル': function(){dialogbox.dialog('close'); cancel_callback();}
         }
@@ -302,7 +302,7 @@ function show_success_dialog(msg, result_tag, callback){
         height: 250,
         width: 600,
         modal: true,
-        buttons: {'OK': function(){dialogbox.dialog('close')}}
+        buttons: {'OK': function(){dialogbox.dialog('close');}}
     });
     dialogbox.children('div#dialogmessage').html(msg + '<br />' + result_tag);
     if (callback) {
@@ -324,7 +324,7 @@ function show_error_dialog(msg, callback){
         height: 250,
         width: 600,
         modal: true,
-        buttons: {'OK': function(){dialogbox.dialog('close')}}
+        buttons: {'OK': function(){dialogbox.dialog('close');}}
     });
     dialogbox.children('div#dialogmessage').html(msg);
     if (callback) {
@@ -353,7 +353,7 @@ function copypastable_setup(target, copypaster_type, baseurl, linkurl){
         var clip = new ZeroClipboard.Client();
         clip.setText(linkurl + "\n" + data);
         clip.glue('paster');
-        $('#paster').click(function(e){$(e.target).remove()});
+        $('#paster').click(function(e){$(e.target).remove();});
     });
     event.preventDefault();
     return false;
@@ -450,7 +450,7 @@ function toggle_item_selection(event, modelname, single){
     else if (event.shiftKey && arguments.callee.last_clicked != undefined) {
         var listup = function(target, start, end) {
             if (end < start) { var tmp = end; end = start; start = tmp; }
-            return $.grep(target.parent().children(), function(obj,i){return $(obj).filter('.selectable').size() > 0 && i >= start && i <= end});
+            return $.grep(target.parent().children(), function(obj,i){return $(obj).filter('.selectable').size() > 0 && i >= start && i <= end;});
         };
         var start_obj_index = $.inArray($(selected_objects()).eq(-1).get()[0], sibling_ids);
         if (target.filter('.selected_item').size() > 0) {
@@ -494,10 +494,10 @@ function reload_table_rows(type, oids){
             target.animate({backgroundColor:'yellow'}, 250, null, function(){
                 target.animate({backgroundColor:orig_color}, 250, null, function(){
                     target.removeAttr('style');
-                })
-            })
-        })
-    })
+                });
+            });
+        });
+    });
 };
 
 function detailbox_offset(){
@@ -707,7 +707,7 @@ function show_editable_item(event) {
 
 function rollback_selectable_item(event) {
     var pre_val = $(event.target).closest('.clickableitem').children('.dataview').attr('title');
-    var selectable = $(event.target).closest('.dataedit').children('.div.comboselect').children('select')
+    var selectable = $(event.target).closest('.dataedit').children('.div.comboselect').children('select');
     if (pre_val == '') { selectable.val('___blank'); }
     else { selectable.val(pre_val); }
 };
@@ -735,7 +735,7 @@ function show_add_item(event) {
     div2.children('input')
         .addClass('datainput')
         .unbind()
-        .focus(function(){this.select()})
+        .focus(function(){this.select();})
         .blur(hide_add_item)
         .keypress(function(e){if(e.which == 13){$(e.target).closest('form.field_edit_form').submit();};})
         .focus();
@@ -769,7 +769,7 @@ function switch_combobox_input(event) {
     dataedit.children('div.comboinput').children('input')
         .addClass('datainput')
         .unbind()
-        .focus(function(){this.select()})
+        .focus(function(){this.select();})
         .blur(rollback_selectable_item)
         .blur(rollback_editable_item)
         .keypress(function(e){if(e.which == 13){$(e.target).closest('form.field_edit_form').submit();};})

@@ -3,7 +3,7 @@ function dispatch_admin_operation(event) {
     if (target.val() == 'none' || target.val() == 'nonedefault') { return false; };
     if ($('#selections').children().size() == 0) {
         show_error_dialog('何も選択されていません', reset_admin_operation_selection);
-        return;
+        return null;
     }
     var modeltype = null;
     var dialogtype = null;
@@ -62,12 +62,12 @@ function dispatch_admin_operation(event) {
 
     if (goto_url != null) {
         load_page(goto_url);
-        return;
+        return null;
     }
 
     if (modeltype == null || dialogtype == null) {
         show_error_dialog('実装されてない処理です、開発者にご連絡を！', reset_admin_operation_selection);
-        return;
+        return null;
     }
     alter_process(target.val(), modeltype, dialogtype);
 };
@@ -86,13 +86,13 @@ function alter_process(ope, modeltype, dialogtype) {
                     url: '/ybz/' + modeltype + '/alter-execute/' + ope + '/' + oidlist,
                     type: 'POST',
                     error: function(xhr){show_error_dialog(xhr.responseText, reset_admin_operation_selection);},
-                    success: function(data, dataType){show_success_dialog('処理に成功しました', data, reload_page)}
-                })}, reset_admin_operation_selection);
+                    success: function(data, dataType){show_success_dialog('処理に成功しました', data, reload_page);}
+                });}, reset_admin_operation_selection);
         };
     }
     else if (dialogtype == 'form_dialog') {
         success_callback = function(data, dataType){
-            show_form_dialog('/ybz/' + modeltype + '/alter-execute/' + ope + '/' + oidlist, data, reload_page, reset_admin_operation_selection)
+            show_form_dialog('/ybz/' + modeltype + '/alter-execute/' + ope + '/' + oidlist, data, reload_page, reset_admin_operation_selection);
         };
     }
     $.ajax({
