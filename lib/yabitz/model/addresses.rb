@@ -260,7 +260,7 @@ module Yabitz
 
       def rack_set
         racktype = Yabitz::RackTypes.search_by_unit(self.rackunit)
-        rack = Yabitz::Model::Rack.query_or_create(:label => racktype.rack_label(self.rackunit))
+        rack = Yabitz::Model::Rack.query_or_create(:label => racktype.rack_label(self.rackunit), :type => racktype.name, :datacenter => racktype.datacenter)
         unless rack.type and rack.datacenter
           rack.type = racktype.name
           rack.datacenter = racktype.datacenter
