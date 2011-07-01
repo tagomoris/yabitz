@@ -54,7 +54,7 @@ module Yabitz
     #   dividing(rackunit_label) #=> String
     #   rack_label_example #=> String ('Xn-Xnn')
     #   rackunit_label_example #=> String ('Xn-Xnn-Xn / Xn-Xnn-Xn[fr]')
-    #   upper_rackunit_labels(from, num) #=> Array of String
+    #   upper_rackunit_labels(from, num) #=> Array of String, rackunit labels (length: num) above of rackunit specified as 'from'
     #   rackunit_space_list(rack_label) #=> Array of list of String of rack's content, from top to bottom, [[full, front, rear], ...]
     #   rackunit_status_list(rack_label) #=> [units_fully_available_for_host, units_partially_or_fully_used_for_host]
     #   rack_display_template #=> String
