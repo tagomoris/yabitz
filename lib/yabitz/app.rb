@@ -128,7 +128,7 @@ class Yabitz::Application < Sinatra::Base
     when '.csv'
       response['Content-Type'] = 'text/csv'
       # ignore service list for csv
-      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_L, @results.map(&:last).flatten)
+      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, @results.map(&:last).flatten)
     else
       @copypastable = true
       @service_unselectable = true
@@ -161,7 +161,7 @@ class Yabitz::Application < Sinatra::Base
       @hosts.to_json
     when '.csv'
       response['Content-Type'] = 'text/csv'
-      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_L, @hosts)
+      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, @hosts)
     else
       @copypastable = true
       haml :detailsearch, :locals => {:andor => andor, :conditions => conditions}
@@ -229,7 +229,7 @@ class Yabitz::Application < Sinatra::Base
       @hosts.to_json
     when '.csv'
       response['Content-Type'] = 'text/csv'
-      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_L, @hosts)
+      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, @hosts)
     else
       #TODO sort order options
       @hosts.sort!
@@ -251,7 +251,7 @@ class Yabitz::Application < Sinatra::Base
       ip.hosts.to_json
     when '.csv'
       response['Content-Type'] = 'text/csv'
-      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_L, ip.hosts)
+      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, ip.hosts)
     else
       @hosts = ip.hosts
       @hosts.sort!
@@ -274,7 +274,7 @@ class Yabitz::Application < Sinatra::Base
       @hosts.to_json
     when '.csv'
       response['Content-Type'] = 'text/csv'
-      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_L, @hosts)
+      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, @hosts)
     else
       @hosts.sort!
       status_title = Yabitz::Model::Host.status_title(status.upcase)
@@ -294,7 +294,7 @@ class Yabitz::Application < Sinatra::Base
       @hosts.to_json
     when '.csv'
       response['Content-Type'] = 'text/csv'
-      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_L, @hosts)
+      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, @hosts)
     else
       pass
     end
@@ -574,7 +574,7 @@ class Yabitz::Application < Sinatra::Base
       Yabitz::Model::Host.build_csv(fields, @hosts)
     when '.csv'
       response['Content-Type'] = 'text/csv'
-      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_L, @hosts)
+      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, @hosts)
     else
       @page_title = "ホスト: #{@hosts.map(&:display_name).join(', ')}"
       @copypastable = true
