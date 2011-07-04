@@ -26,11 +26,11 @@ module Yabitz
       field :serial, :string, :length => 1024, :empty => :ok
       field :notes, :string, :length => 4096, :empty => :ok
 
-      CSVFIELDS = [:oid, :productname, :delivered, :status, :serial]
+      CSVFIELDS = [:oid, :hwid, :productname, :delivered, :status, :serial]
 
       def self.instanciate_mapping(fieldname)
         case fieldname
-        when :productname, :delivered, :status, :serial, :notes
+        when :hwid, :productname, :delivered, :status, :serial, :notes
           {:method => :new, :class => String}
         else
           raise ArgumentError, "unknown field name #{fieldname}"
@@ -38,11 +38,10 @@ module Yabitz
       end
 
       def to_s
-        self.productname + ((self.serial.nil? or self.serial.length < 1) ? "(oid:#{self.oid})" : "(serial:#{self.serial})")
+        "#{self.productname} (#{self.hwid})"
       end
 
       def <=>(other)
-        #TODO: rethink later.
         # status(stock->repair->broken->in_use?) -> hwid
         return STATUS_ORDER_MAP[self.status] <=> STATUS_ORDER_MAP[other.status] unless self.status == other.status
         self.hwid <=> other.hwid
