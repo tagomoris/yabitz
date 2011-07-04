@@ -328,6 +328,22 @@ removed     ENUM('0','1')   NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB charset='utf8'
 EOSQL
 
+    sqls.push <<-EOSQL
+CREATE TABLE bricks (
+id          INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+oid         INT             NOT NULL,
+productname VARCHAR(64)     NOT NULL,
+delivered   VARCHAR(10)     NOT NULL,
+status      VARCHAR(16)     NOT NULL,
+serial      VARCHAR(16)     ,
+notes       TEXT            ,
+inserted_at TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+operated_by INT             NOT NULL,
+head        ENUM('0','1')   NOT NULL DEFAULT '1',
+removed     ENUM('0','1')   NOT NULL DEFAULT '0'
+) ENGINE=InnoDB charset='utf8'
+EOSQL
+
     c = conn()
     sqls.each do |s|
       c.query(s)
