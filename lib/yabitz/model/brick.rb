@@ -19,6 +19,7 @@ module Yabitz
       STATUS_ORDER_MAP = {STATUS_STOCK => 0, STATUS_REPAIR => 1, STATUS_BROKEN => 2, STATUS_IN_USE => 3}
 
       table :bricks
+      field :hwid, :string, :length => 16
       field :productname, :string, :length => 64
       field :delivered, :string, :validator => 'check_delivered', :normalizer => 'normalize_delivered'
       field :status, :string, :selector => STATUS_LIST, :default => STATUS_STOCK
@@ -42,11 +43,9 @@ module Yabitz
 
       def <=>(other)
         #TODO: rethink later.
-        # status(stock->repair->broken->in_use?) -> productname -> delivered -> serial ?
+        # status(stock->repair->broken->in_use?) -> hwid
         return STATUS_ORDER_MAP[self.status] <=> STATUS_ORDER_MAP[other.status] unless self.status == other.status
-        return self.productname <=> other.productname unless self.productname == other.productname
-        return self.delivered <=> other.delivered unless self.delivered == other.delivered
-        self.serial.to_s <=> other.serial.to_s
+        self.hwid <=> other.hwid
       end
 
       def self.normalize_delivered(str)

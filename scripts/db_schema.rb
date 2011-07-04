@@ -332,6 +332,7 @@ EOSQL
 CREATE TABLE bricks (
 id          INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
 oid         INT             NOT NULL,
+hwid        VARCHAR(16)     NOT NULL,
 productname VARCHAR(64)     NOT NULL,
 delivered   VARCHAR(10)     NOT NULL,
 status      VARCHAR(16)     NOT NULL,

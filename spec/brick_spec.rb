@@ -52,6 +52,10 @@ describe Yabitz::Model::Brick do
     @t.check_delivered('2011-13-01').should be_false
   end
 
+  it "の #hwid が空欄を許さず、また16文字以下の文字列のみを受け入れること" do
+    
+  end
+
   it "の #productname が空欄を許さず、また64文字以下の文字列のみを受け付けること" do
     lambda {@t.productname = nil}.should raise_exception(Stratum::FieldValidationError)
     lambda {@t.productname = ''}.should raise_exception(Stratum::FieldValidationError)
@@ -84,7 +88,7 @@ describe Yabitz::Model::Brick do
     @cls.new.status.should eql(Yabitz::Model::Brick::STATUS_STOCK)
   end
 
-  it "の #<=> が status(stock->repair->broken->in_use?) -> productname -> delivered -> serial の順にソート対象とすること" do
+  it "の #<=> が status(stock->repair->broken->in_use?) -> hwid の順にソート対象とすること" do
     t1 = @cls.new; t1.serial = 't1'; t1.status = Yabitz::Model::Brick::STATUS_STOCK
     t2 = @cls.new; t2.serial = 't2'; t2.status = Yabitz::Model::Brick::STATUS_REPAIR
     t3 = @cls.new; t3.serial = 't3'; t3.status = Yabitz::Model::Brick::STATUS_BROKEN
@@ -92,15 +96,15 @@ describe Yabitz::Model::Brick do
     [t2, t4, t3, t1].sort.map(&:serial).should eql(['t1', 't2', 't3', 't4'])
 
     # default status is 'STOCK'
-    ta = @cls.new; ta.serial = 'ta'; ta.productname = 'A1'; ta.delivered = '2011-07-01'
-    tb = @cls.new; tb.serial = 'tb'; tb.productname = 'A1'; tb.delivered = '2011-07-01'
-    tc = @cls.new; tc.serial = 'tc'; tc.productname = 'A2'; tc.delivered = '2011-07-01'
-    td = @cls.new; td.serial = 'td'; td.productname = 'B11'; td.delivered = '2011-07-01'
-    te = @cls.new; te.serial = 'te'; te.productname = 'B111'; te.delivered = '2011-07-01'
-    tf = @cls.new; tf.serial = 'tf'; tf.productname = 'B111'; tf.delivered = '2011-07-02'
-    tg = @cls.new; tg.serial = 'tg'; tg.productname = 'B111'; tg.delivered = '2011-07-04'
-    th = @cls.new; th.serial = 'th'; th.productname = 'B111'; th.delivered = '2011-07-04'
-    ti = @cls.new; ti.serial = 'ti'; ti.productname = 'B111'; ti.delivered = '2011-07-04'
+    ta = @cls.new; ta.serial = 'ta'; ta.status = Yabitz::Model::Brick::STATUS_STOCK; ta.hwid = 'XX1'; ta.productname = 'B11'; ta.delivered = '2011-07-02'
+    tb = @cls.new; tb.serial = 'tb'; tb.status = Yabitz::Model::Brick::STATUS_STOCK; tb.hwid = 'XX2'; tb.productname = 'A9'; tb.delivered = '2011-07-07'
+    tc = @cls.new; tc.serial = 'tc'; tc.status = Yabitz::Model::Brick::STATUS_STOCK; tc.hwid = 'XX21'; tc.productname = 'A2'; tc.delivered = '2011-07-03'
+    td = @cls.new; td.serial = 'td'; td.status = Yabitz::Model::Brick::STATUS_REPAIR; td.hwid = 'XA1'; td.productname = 'B1'; td.delivered = '2011-07-01'
+    te = @cls.new; te.serial = 'te'; te.status = Yabitz::Model::Brick::STATUS_REPAIR; te.hwid = 'XX1'; te.productname = 'A3'; te.delivered = '2011-06-01'
+    tf = @cls.new; tf.serial = 'tf'; tf.status = Yabitz::Model::Brick::STATUS_BROKEN; tf.hwid = 'X'; tf.productname = 'XX1'; tf.delivered = '2011-07-11'
+    tg = @cls.new; tg.serial = 'tg'; tg.status = Yabitz::Model::Brick::STATUS_BROKEN; tg.hwid = 'XX1'; tg.productname = 'B1'; tg.delivered = '2011-07-09'
+    th = @cls.new; th.serial = 'th'; th.status = Yabitz::Model::Brick::STATUS_IN_USE; th.hwid = 'AX1'; th.productname = 'B11'; th.delivered = '2011-07-01'
+    ti = @cls.new; ti.serial = 'ti'; ti.status = Yabitz::Model::Brick::STATUS_IN_USE; ti.hwid = 'XX1'; ti.productname = 'A0'; ti.delivered = '2011-07-06'
     [th, ti, td, ta, tb, tf, tg, tc, te].sort.map(&:serial).should eql(['ta', 'tb', 'tc', 'td', 'te', 'tf', 'tg', 'th', 'ti'])
   end
 
