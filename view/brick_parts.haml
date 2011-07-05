@@ -1,0 +1,48 @@
+-# coding: utf-8
+
+%div#detailbox
+  %form.identity
+    %input{:type => "hidden", :name => "oid", :value => @brick.oid}
+    %input{:type => "hidden", :name => "type", :value => "brick"}
+  %h3
+    連絡先メンバ
+  = field_editable 'brick', @brick, :text, :hwid, "HWID", @brick.hwid, "不明"
+  = field_editable 'brick', @brick, :text, :productname, "製品名", @brick.productname, "不明"
+  %div.fieldvalue
+    %span.field 状態:
+    %span.value&= Yabitz::Model::Brick.status_title(@brick.status)
+  = field_editable 'brick', @brick, :text, :serial, "シリアル番号", @brick.serial, "不明"
+  = field_editable 'brick', @brick, :text, :delivered, "納品日", @brick.delivered, "不明"
+  - if @user
+    %form.inline.field_edit_form{:name => "fieldedit", :action => "/ybz/brick/#{@brick.oid}", :method => "POST", :onsubmit => "return false;"}
+      %div.fieldvalue.memoitem
+        %div.hidden
+          %textarea.valueholder&= @brick.notes
+        %input{:type => "hidden", :name => "field", :value => "notes"}
+        %input{:type => "hidden", :name => "target_id", :value => @brick.id}
+        %input{:type => "hidden", :name => "operation", :value => "edit"}
+        %div.field
+          メモ:
+          %div.inline.memoeditbutton{:style => "margin-left: 1em;"}
+            %img.button.clickablebutton{:src => "/images/edit.png", :alt => "edit"}
+        - if @brick.notes.nil? or @brick.notes.empty?
+          %div.dataview{:style => "margin-left: 1em;"}
+            なし
+        - else
+          %div.dataview
+            - @brick.notes.split("\n").each do |note|
+              %div
+                &= note
+        %div.dataedit.memoarea
+          %textarea{:rows => 15, :cols => 28, :name => "value"}&= @brick.notes
+          %input{:type => "submit", :name => "memoupdate", :value => "更新"}
+          %input{:type => "reset", :name => "memocancel", :value => "取消"}
+  - else
+    %div.field メモ:
+    %div.value
+      - if @brick.notes.nil? or @brick.notes.empty?
+        なし
+      - else
+        - @brick.notes.split("\n").each do |note|
+          %div
+            &= note

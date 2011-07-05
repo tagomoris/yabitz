@@ -50,14 +50,22 @@ function dispatch_admin_operation(event) {
         switch (target.val()) {
         case 'delete_records': dialogtype = 'confirm_dialog'; break;
         };
-        
     }
     else if (target.attr('id') == 'rack_operation_list') {
         modeltype = 'rack';
         switch (target.val()) {
         case 'delete_records': dialogtype = 'confirm_dialog'; break;
         };
-        
+    }
+    else if (target.attr('id') == 'brick_operation_list') {
+        modeltype = 'brick';
+        switch (target.val()) {
+        case 'status_in_use':
+        case 'status_repair':
+        case 'status_broken':
+        case 'status_stock': dialogtype = 'confirm_dialog'; break;
+        case 'delete_records': dialogtype = 'confirm_dialog'; break;
+        };
     }
 
     if (goto_url != null) {

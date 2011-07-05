@@ -1,0 +1,20 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %div 表示： 機器一覧
+  %div
+    条件：
+    &= cond
+  %div
+    選択：
+    %button#select_on_all すべて選択
+    %button#select_off_all 選択をクリア
+    %button#selected_bricks 選択対象のみ表示
+    %button#bricks_history 変更履歴(*)
+  - if @isadmin
+    = haml :bricks_operations
+%div#toolbox_spacer_bottom
+%div#maincontents
+  %table#bricklist
+    = partial :brick, :collection => @bricks

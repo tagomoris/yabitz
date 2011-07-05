@@ -459,6 +459,8 @@ input.smartinput
   +main_table
 #contactmemberlist
   +main_table
+#bricklist
+  +main_table
 #charginglist
   +main_table
 #chargedeptlist
@@ -813,6 +815,38 @@ tr.selected_item
   +td_base
   :font-size 80%
   :text-align right
+
+.brick_item
+  +table_base
+.brick_status_in_use
+  :background-color $s_in_service
+  +td_line_header
+.brick_status_stock
+  :background-color $s_under_dev
+  +td_line_header
+.brick_status_repair
+  :background-color $s_no_count
+  +td_line_header
+.brick_status_broken
+  :background-color $s_removed
+  +td_line_header
+.brick_selector
+  +td_selector
+.brick_hwid
+  :text-align center
+  +td_base
+.brick_productname
+  :font-size 80%
+  :text-align right
+  +td_base
+.brick_serial
+  :font-size 80%
+  :text-align right
+  +td_base
+.brick_delivered
+  :font-size 80%
+  :text-align right
+  +td_base
 
 .authinfo_item
   +table_base

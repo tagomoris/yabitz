@@ -2462,6 +2462,202 @@ EOT
 
   # delete '/ybz/contactmembers/:oid' #TODO
 
+  # list, detailview, history, diff(?), search/smartsearch (by hwid,serial), link parts (by hwid)
+  get %r!/ybz/bricks/list/all(\.json|\.csv)?! do |ctype|
+    authorized?
+    @bricks = Yabitz::Model::Brick.all
+    case ctype
+    when '.json'
+      response['Content-Type'] = 'application/json'
+      @bricks.to_json
+    when '.csv'
+      response['Content-Type'] = 'text/csv'
+      Yabitz::Model::Brick.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, @bricks)
+    else
+      @bricks.sort!
+      @page_title = "機器一覧 (全て)"
+      haml :bricks, :locals => {:cond => '全て'}
+    end
+  end
+
+  get %r!/ybz/bricks/list/stock(\.json|\.csv)?! do |ctype|
+    authorized?
+    targetstatus = Yabitz::Model::Brick::STATUS_STOCK
+    @bricks = Yabitz::Model::Brick.query(:status => targetstatus)
+    case ctype
+    when '.json'
+      response['Content-Type'] = 'application/json'
+      @bricks.to_json
+    when '.csv'
+      response['Content-Type'] = 'text/csv'
+      Yabitz::Model::Brick.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, @bricks)
+    else
+      @bricks.sort!
+      statustitle = Yabitz::Model::Brick.status_title(targetstatus)
+      @page_title = "機器一覧 (#{statustitle})"
+      haml :bricks, :locals => {:cond => statustitle}
+    end
+  end
+  get %r!/ybz/bricks/list/in_use(\.json|\.csv)?! do |ctype|
+    authorized?
+    targetstatus = Yabitz::Model::Brick::STATUS_IN_USE
+    @bricks = Yabitz::Model::Brick.query(:status => targetstatus)
+    case ctype
+    when '.json'
+      response['Content-Type'] = 'application/json'
+      @bricks.to_json
+    when '.csv'
+      response['Content-Type'] = 'text/csv'
+      Yabitz::Model::Brick.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, @bricks)
+    else
+      @bricks.sort!
+      statustitle = Yabitz::Model::Brick.status_title(targetstatus)
+      @page_title = "機器一覧 (#{statustitle})"
+      haml :bricks, :locals => {:cond => statustitle}
+    end
+  end
+  get %r!/ybz/bricks/list/repair(\.json|\.csv)?! do |ctype|
+    authorized?
+    targetstatus = Yabitz::Model::Brick::STATUS_REPAIR
+    @bricks = Yabitz::Model::Brick.query(:status => targetstatus)
+    case ctype
+    when '.json'
+      response['Content-Type'] = 'application/json'
+      @bricks.to_json
+    when '.csv'
+      response['Content-Type'] = 'text/csv'
+      Yabitz::Model::Brick.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, @bricks)
+    else
+      @bricks.sort!
+      statustitle = Yabitz::Model::Brick.status_title(targetstatus)
+      @page_title = "機器一覧 (#{statustitle})"
+      haml :bricks, :locals => {:cond => statustitle}
+    end
+  end
+  get %r!/ybz/bricks/list/broken(\.json|\.csv)?! do |ctype|
+    authorized?
+    targetstatus = Yabitz::Model::Brick::STATUS_BROKEN
+    @bricks = Yabitz::Model::Brick.query(:status => targetstatus)
+    case ctype
+    when '.json'
+      response['Content-Type'] = 'application/json'
+      @bricks.to_json
+    when '.csv'
+      response['Content-Type'] = 'text/csv'
+      Yabitz::Model::Brick.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, @bricks)
+    else
+      @bricks.sort!
+      statustitle = Yabitz::Model::Brick.status_title(targetstatus)
+      @page_title = "機器一覧 (#{statustitle})"
+      haml :bricks, :locals => {:cond => statustitle}
+    end
+  end
+
+  get %r!/ybz/brick/hwid/(.*)(\.json|\.csv)?! do |hwid, ctype|
+    authorized?
+    @bricks = Yabitz::Model::Brick.query(:hwid => hwid)
+    case ctype
+    when '.json'
+      response['Content-Type'] = 'application/json'
+      @bricks.to_json
+    when '.csv'
+      response['Content-Type'] = 'text/csv'
+      Yabitz::Model::Brick.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, @bricks)
+    else
+      @bricks.sort!
+      @page_title = "機器一覧 (HWID: #{CGI.escapeHTML(hwid)})"
+      haml :bricks, :locals => {:cond => 'HWID:' + hwid}
+    end
+  end
+
+  get %r!/ybz/brick/([-0-9]+)(\.ajax|\.tr\.ajax|\.json|\.csv)?! do |oidlist, ctype|
+    authorized?
+    @bricks = Yabitz::Model::Brick.get(oidlist.split('-').map(&:to_i))
+    pass if @bricks.empty? # object not found -> HTTP 404
+    case ctype
+    when '.ajax'
+      @brick = @bricks.first
+      haml :brick_parts, :layout => false
+    when '.tr.ajax'
+      haml :brick, :layout => false, :locals => {:brick => @bricks.first}
+    when '.json'
+      response['Content-Type'] = 'application/json'
+      @bricks.to_json
+    when '.csv'
+      response['Content-Type'] = 'text/csv'
+      Yabitz::Model::Brick.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, @bricks)
+    else
+      @page_title = "機器一覧"
+      haml :bricks, :locals => {:cond => '機器: ' + @bricks.map{|b| CGI.escapeHTML(b.to_s)}.join(', ')}
+    end
+  end
+
+  post '/ybz/brick/:oid' do 
+    protected!
+    Stratum.transaction do |conn|
+      @brick = Yabitz::Model::Brick.get(params[:oid].to_i)
+      pass unless @brick
+      if request.params['target_id']
+        unless request.params['target_id'].to_i == @brick.id
+          raise Stratum::ConcurrentUpdateError
+        end
+      end
+      field = request.params['field'].to_sym
+      @brick.send(field.to_s + '=', @brick.map_value(field, request))
+      @brick.save
+    end
+    "ok"
+  end
+
+  post '/ybz/brick/alter-prepare/:ope/:oidlist' do
+    admin_protected!
+    oidlist = params[:oidlist].split('-').map(&:to_i)
+    bricks = Yabitz::Model::Brick.get(oidlist)
+    unless oidlist.size == bricks.size
+      halt HTTP_STATUS_CONFLICT, "指定された機器の全部もしくは一部が見付かりません<br />ページを更新してやりなおしてください"
+    end
+    
+    case params[:ope]
+    when 'status_in_use', 'status_repair', 'status_broken', 'status_stock'
+      st_title = Yabitz::Model::Brick.status_title(params[:ope] =~ /\Astatus_(.+)\Z/ ? $1.upcase : nil)
+      "状態: #{st_title} へ変更していいですか？"
+    when 'delete_records'
+      "選択された機器すべてのデータを削除して本当にいいですか？<br />" + bricks.map{|brick| h(brick.to_s)}.join('<br />')
+    else
+      pass
+    end
+  end
+  
+  post '/ybz/brick/alter-execute/:ope/:oidlist' do
+    admin_protected!
+    oidlist = params[:oidlist].split('-').map(&:to_i)
+    bricks = Yabitz::Model::Brick.get(oidlist)
+    unless oidlist.size == bricks.size
+      halt HTTP_STATUS_CONFLICT, "指定された機器の全部もしくは一部が見付かりません<br />ページを更新してやりなおしてください"
+    end
+    
+    case params[:ope]
+    when 'status_in_use', 'status_repair', 'status_broken', 'status_stock'
+      raise ArgumentError, params[:ope] unless params[:ope] =~ /\Astatus_(.+)\Z/ and Yabitz::Model::Brick::STATUS_LIST.include?($1.upcase)
+      new_status = $1.upcase
+      Stratum.transaction do |conn|
+        bricks.each do |brick|
+          brick.status = new_status
+          brick.save
+        end
+      end
+    when 'delete_records'
+      Stratum.transaction do |conn|
+        bricks.each do |brick|
+          brick.remove
+        end
+      end
+    else
+      pass
+    end
+    'ok'
+  end
+
   get '/ybz/yabitz.css' do
     authorized?
     content_type 'text/css', :charset => 'utf-8'

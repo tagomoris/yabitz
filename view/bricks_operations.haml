@@ -1,0 +1,12 @@
+-# coding: utf-8
+%div
+  選択した機器への操作: 
+  %select.admin_operations#brick_operation_list
+    %option{:value => 'nonedefault'} 操作を選択してください
+    %option{:value => 'none', :disabled => true} -- 状態の変更 --
+    %option{:value => 'status_in_use'} #{Yabitz::Model::Brick.status_title(Yabitz::Model::Brick::STATUS_IN_USE)} に変更
+    %option{:value => 'status_repair'} #{Yabitz::Model::Brick.status_title(Yabitz::Model::Brick::STATUS_REPAIR)} に変更
+    %option{:value => 'status_broken'} #{Yabitz::Model::Brick.status_title(Yabitz::Model::Brick::STATUS_BROKEN)} に変更
+    %option{:value => 'status_stock'} #{Yabitz::Model::Brick.status_title(Yabitz::Model::Brick::STATUS_STOCK)} に変更
+    %option{:value => 'none', :disabled => true} -- データ削除 --
+    %option{:value => 'delete_records'} 選択した機器のデータを消去

@@ -21,6 +21,8 @@ $(function(){
     $('button#hosts_diff').click(function(e){show_hosts_diff(e);});
     $('button#opetaglist').click(function(e){show_operations(e);});
 
+    $('button#selected_bricks').click(function(e){show_selected_bricks(e);});
+
     $('div#copypasterlinks').find('.copypaster').click(function(e){
         copypastable_all_hosts($(e.target), window.location.href);
     });
@@ -39,6 +41,7 @@ $(function(){
     $('.machine_item.os.selectable').click(function(e){toggle_item_selection(e, 'machines/os', true);});
     $('.opetag_item.selectable').click(function(e){toggle_item_selection(e, 'host/operation', true);});
     $('.contactmember_item.selectable').click(function(e){toggle_item_selection(e, 'contactmember');});
+    $('.brick_item.selectable').click(function(e){toggle_item_selection(e, 'brick');});
 
     // events for mainview toggle
     $('.show_mainview').click(function(event){
@@ -112,6 +115,9 @@ function regist_event_listener(target){
     }
     if (target.hasClass('contactmember_item')) {
         target.click(function(e){toggle_item_selection(e, 'contactmember');});
+    }
+    if (target.hasClass('brick_item')) {
+        target.click(function(e){toggle_item_selection(e, 'brick');});
     }
     if (target.hasClass('authinfo_item')) {
         target.click(function(e){toggle_item_selection(e, 'auth_info');});
@@ -197,6 +203,15 @@ function show_selected_hosts(event){
         return false;
     };
     window.location.href = '/ybz/host/' + selected.get().join('-');
+};
+
+function show_selected_bricks(event){
+    var selected = $(selected_objects());
+    if (selected.size() < 1) {
+        show_error_dialog("対象がなにも選択されていません");
+        return false;
+    };
+    window.location.href = '/ybz/brick/' + selected.get().join('-');
 };
 
 function show_hosts_history(event){

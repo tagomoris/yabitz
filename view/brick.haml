@@ -1,0 +1,32 @@
+-# coding: utf-8
+%tr.brick_item.selectable{:id => brick.oid, :title => h(brick.to_s)}
+  - case brick.status
+  - when Yabitz::Model::Brick::STATUS_STOCK
+    %td.brick_status_stock
+      %div.header_status
+  - when Yabitz::Model::Brick::STATUS_REPAIR
+    %td.brick_status_repair
+      %div.header_status
+  - when Yabitz::Model::Brick::STATUS_BROKEN
+    %td.brick_status_broken
+      %div.header_status
+  - else
+    %td.brick_status_in_use
+      %div.header_status
+  %td.brick_hwid
+    &= brick.hwid
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.brick_productname
+    &= brick.productname
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.brick_serial
+    &= brick.serial
+    %img{:src => "/images/1x1.gif"}
+  %td.td_padding
+    %img{:src => "/images/1x1.gif"}
+  %td.brick_delivered
+    &= brick.delivered
+  %td.td_line_term
+    %img{:src => "/images/1x1.gif"}
