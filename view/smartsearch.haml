@@ -47,3 +47,16 @@
           = partial :host, :collection => match_hosts.sort
         - else
           = partial :host, :collection => match_hosts
+  - if @brick_results.size > 0 and @brick_results.map(&:last).flatten.size > 0
+    - @brick_results.each do |match_condition, match_bricks|
+      - if match_bricks.size > 0
+        %table#bricklist
+          %tr.brick.outline.smartsearch_condition
+            %td.td_line_head
+              %div{:style => "padding-top: 3em;"}
+                %img{:src => "/images/1x1.gif"}
+            %td.td_base{:colspan => 7, :style => "font-style: bold;"}
+              &= match_condition
+            %td.td_line_term
+              %img{:src => "/images/1x1.gif"}
+          = partial :brick, :collection => match_bricks

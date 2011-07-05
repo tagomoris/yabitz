@@ -61,7 +61,8 @@ module Yabitz
        [:hwid, "HWID", :host],
        [:ipaddress, "IPアドレス", :host],
        [:rackunit, "ラック位置", :host],
-       [:tag, "タグ", :host]
+       [:tag, "タグ", :host],
+       [:brickhwid, "機器情報 HWID", :brick]
       ]
     end
 
@@ -71,9 +72,11 @@ module Yabitz
         Yabitz::Model::IPAddress.regex_match(:address => Regexp.compile(keyword)).map(&:hosts).flatten.compact
       when :service
         pattern = Regexp.compile(keyword, Regexp::IGNORECASE)
-        service = Yabitz::Model::Service.regex_match(:name => pattern).flatten.compact
+        # service = Yabitz::Model::Service.regex_match(:name => pattern).flatten.compact
+        Yabitz::Model::Service.regex_match(:name => pattern).flatten.compact
       when :serviceurl
-        services = Yabitz::Model::ServiceURL.query(:url => keyword).map(&:services).flatten.compact
+        # services = Yabitz::Model::ServiceURL.query(:url => keyword).map(&:services).flatten.compact
+        Yabitz::Model::ServiceURL.query(:url => keyword).map(&:services).flatten.compact
       when :rackunit
         Yabitz::Model::RackUnit.regex_match(:rackunit => Regexp.compile(keyword)).map(&:hosts).flatten.compact
       when :dnsname
@@ -82,6 +85,8 @@ module Yabitz
         Yabitz::Model::Host.query(:hwid => keyword)
       when :tag
         Yabitz::Model::TagChain.query(:tagchain => keyword).map(&:host).compact
+      when :brickhwid
+        Yabitz::Model::Brick.query(:hwid => keyword)
       end
     end
   end

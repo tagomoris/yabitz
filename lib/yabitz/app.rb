@@ -108,11 +108,14 @@ class Yabitz::Application < Sinatra::Base
     @page_title = "簡易検索 結果"
     @service_results = []
     @results = []
+    @brick_results = []
     searchparams.each do |keyword|
       search_props = Yabitz::SmartSearch.kind(keyword)
       search_props.each do |type, name, model|
         if model == :service
           @service_results.push([name + ": " + keyword, Yabitz::SmartSearch.search(type, keyword)])
+        elsif model == :brick
+          @brick_results.push([name + ": " + keyword, Yabitz::SmartSearch.search(type, keyword)])
         else
           @results.push([name + ": " + keyword, Yabitz::SmartSearch.search(type, keyword)])
         end
@@ -123,15 +126,16 @@ class Yabitz::Application < Sinatra::Base
     case ctype
     when '.json'
       response['Content-Type'] = 'application/json'
-      # ignore service list for json
+      # ignore service/brick list for json
       @results.map(&:last).flatten.to_json
     when '.csv'
       response['Content-Type'] = 'text/csv'
-      # ignore service list for csv
+      # ignore service/brick list for csv
       Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, @results.map(&:last).flatten)
     else
       @copypastable = true
       @service_unselectable = true
+      @brick_unselectable = true
       haml :smartsearch, :locals => {:cond => searchparams.join(' ')}
     end
   end

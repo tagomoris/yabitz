@@ -1,5 +1,5 @@
 -# coding: utf-8
-%tr.brick_item.selectable{:id => brick.oid, :title => h(brick.to_s)}
+%tr.brick_item.selectable{:id => (@brick_unselectable ? "" : brick.oid), :title => h(brick.to_s)}
   - case brick.status
   - when Yabitz::Model::Brick::STATUS_STOCK
     %td.brick_status_stock
@@ -14,7 +14,10 @@
     %td.brick_status_in_use
       %div.header_status
   %td.brick_hwid
-    &= brick.hwid
+    - if @brick_unselectable
+      %a{:href => '/ybz/brick/hwid/' + h(brick.hwid)}&= brick.hwid
+    - else
+      &= brick.hwid
   %td.td_padding
     %img{:src => "/images/1x1.gif"}
   %td.brick_productname
