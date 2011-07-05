@@ -15,6 +15,46 @@
         %a{:href => "/ybz/services"} サービス一覧
       %li
         %a{:href => "#"}
+          ホスト
+        %ul
+          - if @isadmin
+            %li
+              %a{:href => "/ybz/host/create"} ホスト登録
+          %li
+            %a{:href => "/ybz/hosts/status/under_dev"} 準備中
+          %li
+            %a{:href => "/ybz/hosts/status/no_count"} 非課金
+          %li
+            %a{:href => "/ybz/hosts/status/suspended"} 停止
+          %li
+            %a{:href => "/ybz/hosts/status/standby"} 待機
+          %li
+            %a{:href => "/ybz/hosts/status/removing"} 撤去依頼済
+          %li
+            %a{:href => "/ybz/hosts/status/removed"} 撤去完了
+          %li
+            %a{:href => "/ybz/hosts/status/missing"} 管理対象外
+          %li
+            %a{:href => "/ybz/hosts/status/other"} 不明
+      %li
+        %a{:href => "#"}
+          機器
+        %ul
+          - if @isadmin
+            %li
+              %a{:href => "/ybz/brick/create"} 機器登録
+          %li
+            %a{:href => "/ybz/brick/list/stock"} 在庫
+          %li
+            %a{:href => "/ybz/brick/list/repair"} 修理中
+          %li
+            %a{:href => "/ybz/brick/list/broken"} 故障
+          %li
+            %a{:href => "/ybz/brick/list/in_use"} 使用中
+          %li
+            %a{:href => "/ybz/brick/list/all"} 全て
+      %li
+        %a{:href => "#"}
           各種リスト
         %ul
           %li
@@ -41,31 +81,8 @@
             %a{:href => "/ybz/dept/list"} 部署
       %li
         %a{:href => "#"}
-          ホスト状態別
-        %ul
-          %li
-            %a{:href => "/ybz/hosts/status/under_dev"} 準備中
-          %li
-            %a{:href => "/ybz/hosts/status/no_count"} 非課金
-          %li
-            %a{:href => "/ybz/hosts/status/suspended"} 停止
-          %li
-            %a{:href => "/ybz/hosts/status/standby"} 待機
-          %li
-            %a{:href => "/ybz/hosts/status/removing"} 撤去依頼済
-          %li
-            %a{:href => "/ybz/hosts/status/removed"} 撤去完了
-          %li
-            %a{:href => "/ybz/hosts/status/missing"} 管理対象外
-          %li
-            %a{:href => "/ybz/hosts/status/other"} 不明
-      %li
-        %a{:href => "#"}
           管理項目
         %ul
-          - if @isadmin
-            %li
-              %a{:href => "/ybz/host/create"} ホスト登録
           %li
             %a{:href => "/ybz/charge/summary"} 課金情報
           %li
