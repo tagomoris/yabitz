@@ -33,7 +33,8 @@
       - if plugin.respond_to?(:javascript_parts)
         :javascript
           #{plugin.javascript_parts}
-    %title= (@page_title ? @page_title + " - " : "") + "Yabitz"
+    %title
+      &= (@page_title ? @page_title + " - " : "") + "Yabitz"
   %body
     %div{:id => 'confirm_dialog', :title => "確認", :style => "display: none;"}
       %div{:id => 'dialogmessage', :style => "vertical-align: middle; text-align: center;"}
