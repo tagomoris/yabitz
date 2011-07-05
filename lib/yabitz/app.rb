@@ -2658,6 +2658,18 @@ EOT
     'ok'
   end
 
+  get '/ybz/brick/history/:oidlist' do |oidlist|
+    authorized?
+    @brick_records = []
+    oidlist.split('-').map(&:to_i).each do |oid|
+      @brick_records += Yabitz::Model::Brick.retrospect(oid)
+    end
+    @brick_records.sort!{|a,b| ((b.inserted_at.to_i <=> a.inserted_at.to_i) != 0) ? (b.inserted_at.to_i <=> a.inserted_at.to_i) : (b.id.to_i <=> a.id.to_i)}
+    @oidlist = oidlist
+    @hide_detailview = true
+    haml :brick_history
+  end
+
   get '/ybz/yabitz.css' do
     authorized?
     content_type 'text/css', :charset => 'utf-8'

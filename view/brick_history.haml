@@ -1,0 +1,46 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %h3 機器 変更履歴
+  %div
+    &= "対象OID: " + @oidlist.gsub(/-/, ',')
+  -#
+    %div.hidden
+      %input{:type => "text", :name => "oidlist", :value => @oidlist}
+    %div
+      %button#hosts_diff 選択した範囲の差分を表示
+%div#toolbox_spacer_bottom
+%div#maincontents
+  %form.inline
+    %table#bricklist
+      %tr.brick_full
+        %td.td_line_head{:style => "background-color: #ccffcc;"}
+          %img{:src => "/images/1x1.gif"}
+        -#
+          %td.host_selector{:style => "margin: 2px; padding: 0px; font-size: 20px; background-color: #ccffcc;"}
+            %img{:src => "/images/1x1.gif"}
+          %td.host_selector{:style => "margin: 2px; padding: 0px; font-size: 20px; background-color: #ccffcc;"}
+            %img{:src => "/images/1x1.gif"}
+        %td.td_base_narrow{:style => "font-size: 80%; text-align: center; background-color: #ccffcc;"}
+          変更日時
+          %br
+          ユーザ
+        %td.td_padding_ex{:style => "background-color: #ccffcc;"}
+          %img{:src => "/images/1x1.gif"}
+        %td.td_base_narrow{:style => "background-color: #ccffcc;"} 状態
+        %td.td_padding_ex{:style => "background-color: #ccffcc;"}
+          %img{:src => "/images/1x1.gif"}
+        %td.td_base_narrow{:style => "background-color: #ccffcc;"} HWID
+        %td.td_padding_ex{:style => "background-color: #ccffcc;"}
+          %img{:src => "/images/1x1.gif"}
+        %td.td_base_narrow{:style => "background-color: #ccffcc;"} 製品名
+        %td.td_padding_ex{:style => "background-color: #ccffcc;"}
+          %img{:src => "/images/1x1.gif"}
+        %td.td_base_narrow{:style => "background-color: #ccffcc;"} シリアル番号
+        %td.td_padding_ex{:style => "background-color: #ccffcc;"}
+          %img{:src => "/images/1x1.gif"}
+        %td.td_base_narrow{:style => "background-color: #ccffcc;"} 納品日
+        %td.td_line_term{:style => "background-color: #ccffcc;"}
+          %img{:src => "/images/1x1.gif"}
+      = partial :brick_full, :collection => @brick_records
