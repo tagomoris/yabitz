@@ -22,6 +22,7 @@ module Yabitz
       field :hwid, :string, :length => 16
       field :productname, :string, :length => 64
       field :delivered, :string, :validator => 'check_delivered', :normalizer => 'normalize_delivered'
+      fieldex :delivered, "例: 2011-07-05"
       field :status, :string, :selector => STATUS_LIST, :default => STATUS_STOCK
       field :serial, :string, :length => 1024, :empty => :ok
       field :notes, :string, :length => 4096, :empty => :ok
