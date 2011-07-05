@@ -2462,6 +2462,34 @@ EOT
 
   # delete '/ybz/contactmembers/:oid' #TODO
 
+
+  get '/ybz/brick/create' do
+    admin_protected!
+    @pate_title = "機器追加"
+    haml :brick_create
+  end
+
+  # TODO: handler for PUT with json
+  # put '/ybz/brick/create'
+
+  post '/ybz/brick/create' do
+    admin_protected!
+    params = request.params
+    Stratum.transaction do |conn|
+      params.keys.select{|k| k =~ /\Aadding\d+\Z/}.each do |key|
+        i = params[key].to_i.to_s
+        brick = Yabitz::Model::Brick.new
+        brick.productname = params["productname#{i}"].strip
+        brick.hwid = params["hwid#{i}"].strip
+        brick.serial = params["serial#{i}"].strip
+        brick.delivered = params["delivered"]
+        brick.status = params["status"]
+        brick.save
+      end
+    end
+    "ok"
+  end
+
   # list, detailview, history, diff(?), search/smartsearch (by hwid,serial), link parts (by hwid)
   get %r!/ybz/bricks/list/all(\.json|\.csv)?! do |ctype|
     authorized?

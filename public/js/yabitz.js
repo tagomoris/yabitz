@@ -192,6 +192,11 @@ function commit_main_form(event){
             location.href = '/ybz/contact/' + $('div#contact_oid div.contact_oid').attr('id');
         });
     }
+    else if (form.attr('name') == 'brick_create') {
+        commit_mainview_form($(event.target), "機器追加に成功", function(){
+            location.href = '/ybz/bricks/list/' + form.find('select[name="status"]').val().toLowerCase();
+        });
+    }
 
     event.preventDefault();
     return false;
