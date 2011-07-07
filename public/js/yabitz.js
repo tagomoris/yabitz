@@ -207,6 +207,11 @@ function commit_main_form(event){
             location.href = '/ybz/bricks/list/' + form.find('select[name="status"]').val().toLowerCase();
         });
     }
+    else if (form.attr('name') == 'brick_bulkcreate') {
+        commit_mainview_form($(event.target), "機器追加に成功", function(){
+            location.href = '/ybz/bricks/list/' + form.find('select[name="status"]').val().toLowerCase();
+        });
+    }
 
     event.preventDefault();
     return false;

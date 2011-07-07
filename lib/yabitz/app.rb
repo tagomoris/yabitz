@@ -2473,9 +2473,6 @@ EOT
     haml :brick_create
   end
 
-  # TODO: handler for PUT with json
-  # put '/ybz/brick/create'
-
   post '/ybz/brick/create' do
     admin_protected!
     params = request.params
@@ -2494,7 +2491,40 @@ EOT
     "ok"
   end
 
-  # list, detailview, history, diff(?), search/smartsearch (by hwid,serial), link parts (by hwid)
+  get '/ybz/brick/bulkcreate' do
+    admin_protected!
+    @page_title = "機器追加(CSV/TSV)"
+    haml :brick_bulkcreate
+  end
+  
+  post '/ybz/brick/bulkcreate' do
+    admin_protected!
+    status = request.params["status"]
+    datalines = request.params["dataarea"].split("\n")
+    raise Yabitz::InconsistentDataError, "データが空です" if datalines.empty?
+    splitter = if datalines.first.include?("\t")
+                 lambda {|l| l.split("\t")}
+               else
+                 require 'csv'
+                 lambda {|l| l.parse_csv}
+               end
+    Stratum.transaction do |conn|
+      datalines.each do |line|
+        next if line.empty? or line.length < 1
+        p, s, d, h = splitter.call(line)
+        raise Yabitz::InconsistentDataError, "不足しているフィールドがあります" unless p and s and d and h
+        brick = Yabitz::Model::Brick.new
+        brick.productname = p
+        brick.hwid = h
+        brick.serial = s
+        brick.delivered = d
+        brick.status = status
+        brick.save
+      end
+    end
+    "ok"
+  end
+
   get %r!/ybz/bricks/list/all(\.json|\.csv)?! do |ctype|
     authorized?
     @bricks = Yabitz::Model::Brick.all
