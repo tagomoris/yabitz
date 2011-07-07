@@ -1,0 +1,38 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %div 機器追加 (CSV/TSV)
+  %div{:style => "margin-left: 2em;"}
+    %img{:src => "/images/1x1.gif"}
+%div#toolbox_spacer_bottom
+%div#maincontents
+  %table.mainviewboxouter
+    %tr
+      %td
+        %div.mainviewbox
+          %form.mainform{:name => "brick_bulkcreate", :action => "/ybz/brick/bulkcreate", :method => "POST", :onsubmit => "return false;"}
+            %table.inputitems
+              %tr
+                %td.namefield 状態
+                %td :
+                %td.inputfield
+                  %select{:name => "status"}
+                    - Yabitz::Model::Brick::STATUS_LIST.each do |state|
+                      %option{:value => state}= Yabitz::Model::Brick.status_title(state)
+              %tr
+                %td.namefield フィールド
+                %td :
+                %td.inputfield 機種名、シリアル、納品日、HWID
+              %tr
+                %td.namefield データ形式
+                %td :
+                %td.inputfield タブが含まれる場合はタブ区切り、それ以外はCSVとして処理します
+            %div.cloneable
+            %div.cloneable
+              %textarea{:name => "dataarea", :cols => 60, :rows => 15, :style => "border: 1px solid black; font-size: medium;"}
+            %div{:style => "padding-right: 3em; text-align: right;"}
+              %button{:onclick => "window.location.reload(); return false;"}
+                %div{:style => "padding: 0.5em;"} キャンセル
+              %button.mainform_commit{:onclick => "return false;"}
+                %div{:style => "padding: 0.5em 3em 0.5em 3em;"} 作成
