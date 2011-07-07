@@ -73,10 +73,8 @@ module Yabitz
         Yabitz::Model::IPAddress.regex_match(:address => Regexp.compile(keyword)).map(&:hosts).flatten.compact
       when :service
         pattern = Regexp.compile(keyword, Regexp::IGNORECASE)
-        # service = Yabitz::Model::Service.regex_match(:name => pattern).flatten.compact
         Yabitz::Model::Service.regex_match(:name => pattern).flatten.compact
       when :serviceurl
-        # services = Yabitz::Model::ServiceURL.query(:url => keyword).map(&:services).flatten.compact
         Yabitz::Model::ServiceURL.query(:url => keyword).map(&:services).flatten.compact
       when :rackunit
         Yabitz::Model::RackUnit.regex_match(:rackunit => Regexp.compile(keyword)).map(&:hosts).flatten.compact
