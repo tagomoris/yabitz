@@ -62,7 +62,8 @@ module Yabitz
        [:ipaddress, "IPアドレス", :host],
        [:rackunit, "ラック位置", :host],
        [:tag, "タグ", :host],
-       [:brickhwid, "機器情報 HWID", :brick]
+       [:brickhwid, "機器情報 HWID", :brick],
+       [:brickserial, "機器情報 シリアル", :brick]
       ]
     end
 
@@ -87,6 +88,8 @@ module Yabitz
         Yabitz::Model::TagChain.query(:tagchain => keyword).map(&:host).compact
       when :brickhwid
         Yabitz::Model::Brick.query(:hwid => keyword)
+      when :brickserial
+        Yabitz::Model::Brick.query(:serial => keyword)
       end
     end
   end
