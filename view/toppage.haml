@@ -24,6 +24,9 @@
             %div{:style => "padding: 0.5em 1em 0.5em 1em;"} ラック位置検索
           %button.search_googlelike{:id => "hwid_button", :title => "hwid"}
             %div{:style => "padding: 0.5em 1em 0.5em 1em;"} HWID検索
+          %br
+          %button.search_googlelike_smart{:id => "brick_button", :title => "hwid/serial"}
+            %div{:style => "padding: 0.5em 1em 0.5em 1em;"} ホスト・機器検索(HWID/シリアル)
   %div#toolbox_spacer_bottom
 - else
   %div#toolbox_spacer_top
@@ -53,7 +56,7 @@
             %td.inputfield{:style => "font-size: 150%; text-align: left; width: 60%;"}
               %input.simple{:type => "text", :name => "value0", :size => 30}
             %td.namefield
-              %button.host_search_dns
+              %button.host_search_ip
                 %div{:style => "width: 10em;"} IPアドレス検索
       %br
       %form.mainform{:name => "host_search_service", :action => "/ybz/search", :method => "GET"}
@@ -65,7 +68,7 @@
             %td.inputfield{:style => "font-size: 150%; text-align: left; width: 60%;"}
               %input.simple{:type => "text", :name => "value0", :size => 30}
             %td.namefield
-              %button.host_search_dns
+              %button.host_search_service
                 %div{:style => "width: 10em;"} サービス名検索
       %br
       %form.mainform{:name => "host_search_rackunit", :action => "/ybz/search", :method => "GET"}
@@ -77,7 +80,7 @@
             %td.inputfield{:style => "font-size: 150%; text-align: left; width: 60%;"}
               %input.simple{:type => "text", :name => "value0", :size => 30}
             %td.namefield
-              %button.host_search_dns
+              %button.host_search_rack
                 %div{:style => "width: 10em;"} ラック位置検索
       %br
       %form.mainform{:name => "host_search_hwid", :action => "/ybz/search", :method => "GET"}
@@ -89,6 +92,15 @@
             %td.inputfield{:style => "font-size: 150%; text-align: left; width: 60%;"}
               %input.simple{:type => "text", :name => "value0", :size => 30}
             %td.namefield
-              %button.host_search_dns
+              %button.host_search_hwid
                 %div{:style => "width: 10em;"} HWID検索
+      %br
+      %form.mainform{:name => "smart_search", :action => "/ybz/smartsearch", :method => "GET"}
+        %table.inputitems
+          %tr
+            %td.inputfield{:style => "font-size: 150%; text-align: left; width: 60%;"}
+              %input.simple{:type => "text", :name => "keywords", :size => 30}
+            %td.namefield
+              %button.smart_search
+                %div{:style => "width: 10em;"} 機器・ホスト検索(HWID/シリアル)
   %div#toolbox_spacer_bottom

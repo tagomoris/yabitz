@@ -71,6 +71,13 @@ $(function(){
         e.preventDefault();
         return false;
     });
+    $('button.search_googlelike_smart').click(function(e){
+        var button = $(e.target).closest('button.search_googlelike_smart');
+        var param = $('input#googlelikeinput').val();
+        window.location.href = '/ybz/smartsearch?keywords=' + param;
+        e.preventDefault();
+        return false;
+    });
 
     // admin events for mainview
     $('form.smartadd').submit(function(e){commit_smartadd_form(e);});
@@ -170,6 +177,9 @@ function commit_main_form(event){
         return true;
     }
     else if (form.attr('name') == 'host_search_hwid') {
+        return true;
+    }
+    else if (form.attr('name') == 'smart_search') {
         return true;
     }
     else if (form.attr('name') == 'contact_edit') {
