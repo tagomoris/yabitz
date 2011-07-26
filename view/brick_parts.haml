@@ -5,7 +5,7 @@
     %input{:type => "hidden", :name => "oid", :value => @brick.oid}
     %input{:type => "hidden", :name => "type", :value => "brick"}
   %h3
-    連絡先メンバ
+    機器
   = field_editable 'brick', @brick, :text, :hwid, "HWID", @brick.hwid, "不明"
   = field_editable 'brick', @brick, :text, :productname, "製品名", @brick.productname, "不明"
   %div.fieldvalue
