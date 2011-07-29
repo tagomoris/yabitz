@@ -1,0 +1,31 @@
+-# coding: utf-8
+
+%div#toolbox_spacer_top
+%div#toolbox
+  %h3 機器利用開始リスト
+  %div{:style => "padding: 1em;"}
+    %form.mainform{:name => "host_search", :action => "/ybz/search", :method => "GET"}
+      %div
+        %div.search_item
+          %table.inputitems
+            %tr
+              %td.namefield{:style => "text-align: left; width: 65%;"} 範囲始点(YYYY-MM-DD)
+              %td.inputfield{:style => "text-align: left; width: 35%;"}
+                %input.simple{:type => "text", :name => "from", :size => 15}
+            %tr
+              %td.namefield{:style => "text-align: left; width: 65%;"} 範囲終点(YYYY-MM-DD, 空欄で現在)
+              %td.inputfield{:style => "text-align: left; width: 35%;"}
+                %input.simple{:type => "text", :name => "from", :size => 15}
+        %div{:style => "padding-right: 3em; text-align: right;"}
+          %button.mainform_commit
+            %div{:style => "padding: 0.5em 3em 0.5em 3em;"} リストを表示
+%div#toolbox_spacer_bottom
+%div#maincontents
+  %table#servedbricklist
+    - if @served_records
+      - @served_records.keys.each do |service|
+        -# ここにサービス情報 (サービス名、コンテンツコード、台数)
+        - @served_records[service].each do |brick|
+          -# served 用のhaml
+          = haml :host_list, :locals => {:host_list => @hosts.sort}
+      -# 全体のサマリ

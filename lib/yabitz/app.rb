@@ -2469,7 +2469,7 @@ EOT
 
   get '/ybz/brick/create' do
     admin_protected!
-    @pate_title = "機器追加"
+    @page_title = "機器追加"
     haml :brick_create
   end
 
@@ -2730,6 +2730,27 @@ EOT
     @oidlist = oidlist
     @hide_detailview = true
     haml :brick_history
+  end
+
+  get %r!/ybz/brick/served(\/([-0-9]+)(\/([-0-9]+))?)?(\.json|\.csv)?! do |dummy1, from, dummy2, to, ctype|
+    authorized?
+    @served_records = nil
+    if from
+      raise ArgumentError, "invalid from" unless from and from =~ /^\d\d\d\d-\d\d-\d\d$/
+      raise ArgumentError, "invalid to" unless to.nil? or to =~ /^\d\d\d\d-\d\d-\d\d$/
+      from = from + ' 00:00:00'
+      to = to + ' 23:59:59' if to
+      @served_records = Yabitz::Model::Brick.served_between(from, to)
+    end
+    case ctype
+    when '.json'
+      raise NotImplementedError, "hmmmm...."
+    when '.csv'
+      raise NotImplementedError, "hmmmm...."
+    else
+      @page_title = "機器利用開始リスト"
+      haml :brick_served, :locals => {:from => from, :to => to}
+    end
   end
 
   get '/ybz/yabitz.css' do

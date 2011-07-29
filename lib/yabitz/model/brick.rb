@@ -4,6 +4,8 @@ require 'stratum'
 
 require_relative '../misc/validator'
 require_relative '../misc/mapper'
+require_relative './host'
+require_relative './company'
 
 module Yabitz
   module Model
@@ -74,6 +76,35 @@ module Yabitz
         else
           false
         end
+      end
+
+      def self.served_between(from, to)
+        # {service => [brick, brick, ...], ...}
+        result_by_id = {}
+        service_oid_list = []
+        self.dig(from, to).each do |brick_history|
+          object_first_served = nil
+          brick_history.reverse.each do |brick|
+            if [STATUS_IN_USE, STATUS_REPAIR, STATUS_BROKEN].include?(brick.status)
+              object_first_served = brick
+              break
+            end
+          end
+          next unless object_first_served
+          first_served_at = object_first_served.inserted_at.to_s
+          if from <= first_served_at and (to.nil? or first_served_at <= to)
+            target_service_oid = Yabitz::Model::Host.query(:hwid => object_first_served.hwid).select{|h| h.parent_by_id.nil?}.first.service_by_id
+            result_by_id[target_service_oid] ||= []
+            result_by_id[target_service_oid].push(brick_history.first)
+            service_oid_list.push(target_service_oid)
+          end
+        end
+        services = Yabitz::Model::Service.get(service_oid_list)
+        result = {}
+        service_oid_list.each do |service_oid|
+          result[services.select{|s| s.oid == service_oid}.first] = result_by_id[service_oid]
+        end
+        result
       end
 
       def self.status_title(s)
