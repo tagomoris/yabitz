@@ -2735,12 +2735,15 @@ EOT
   get %r!/ybz/brick/served(\/([-0-9]+)(\/([-0-9]+))?)?(\.json|\.csv)?! do |dummy1, from, dummy2, to, ctype|
     authorized?
     @served_records = nil
+    from = params[:from] if not from and params[:from]
+    to = params[:to] if not to and params[:to] and params[:to].size > 0
+
     if from
       raise ArgumentError, "invalid from" unless from and from =~ /^\d\d\d\d-\d\d-\d\d$/
       raise ArgumentError, "invalid to" unless to.nil? or to =~ /^\d\d\d\d-\d\d-\d\d$/
-      from = from + ' 00:00:00'
-      to = to + ' 23:59:59' if to
-      @served_records = Yabitz::Model::Brick.served_between(from, to)
+      from_full = from + ' 00:00:00'
+      to_full = to + ' 23:59:59' if to
+      @served_records = Yabitz::Model::Brick.served_between(from_full, to_full)
     end
     case ctype
     when '.json'
@@ -2748,6 +2751,8 @@ EOT
     when '.csv'
       raise NotImplementedError, "hmmmm...."
     else
+      @from_param = from
+      @to_param = to
       @page_title = "機器利用開始リスト"
       haml :brick_served, :locals => {:from => from, :to => to}
     end

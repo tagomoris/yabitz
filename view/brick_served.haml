@@ -4,18 +4,24 @@
 %div#toolbox
   %h3 機器利用開始リスト
   %div{:style => "padding: 1em;"}
-    %form.mainform{:name => "host_search", :action => "/ybz/search", :method => "GET"}
+    %form.mainform{:name => "host_search", :action => "/ybz/brick/served", :method => "GET"}
       %div
         %div.search_item
           %table.inputitems
             %tr
               %td.namefield{:style => "text-align: left; width: 65%;"} 範囲始点(YYYY-MM-DD)
               %td.inputfield{:style => "text-align: left; width: 35%;"}
-                %input.simple{:type => "text", :name => "from", :size => 15}
+                - if @from_param
+                  %input.simple{:type => "text", :name => "from", :size => 15, :value => @from_param}
+                - else
+                  %input.simple{:type => "text", :name => "from", :size => 15}
             %tr
               %td.namefield{:style => "text-align: left; width: 65%;"} 範囲終点(YYYY-MM-DD, 空欄で現在)
               %td.inputfield{:style => "text-align: left; width: 35%;"}
-                %input.simple{:type => "text", :name => "from", :size => 15}
+                - if @to_param
+                  %input.simple{:type => "text", :name => "to", :size => 15, :value => @to_param}
+                - else
+                  %input.simple{:type => "text", :name => "to", :size => 15}
         %div{:style => "padding-right: 3em; text-align: right;"}
           %button.mainform_commit
             %div{:style => "padding: 0.5em 3em 0.5em 3em;"} リストを表示
@@ -23,9 +29,46 @@
 %div#maincontents
   %table#servedbricklist
     - if @served_records
+      - total_bricks = 0
+      - service_unknowns = @served_records.delete(nil)
       - @served_records.keys.each do |service|
-        -# ここにサービス情報 (サービス名、コンテンツコード、台数)
+        %tr.servedbrick_service
+          %td.brick_status_in_use
+            %div.header_status
+          %td.brick_hwid&= service.name
+          %td.td_padding
+            %img{:src => "/images/1x1.gif"}
+          %td.brick_productname{:colspan => 3}&= service.content.to_s
+          %td.td_padding
+            %img{:src => "/images/1x1.gif"}
+          %td.brick_delivered&= @served_records[service].size.to_s + '台'
+          %td.td_line_term
+            %img{:src => "/images/1x1.gif"}
+        - total_bricks += @served_records[service].size
         - @served_records[service].each do |brick|
-          -# served 用のhaml
-          = haml :host_list, :locals => {:host_list => @hosts.sort}
-      -# 全体のサマリ
+          = haml :brick, :locals => {:brick => brick}
+      - if service_unknowns
+        %tr.servedbrick_service
+          %td.brick_status_in_use
+            %div.header_status
+          %td.brick_hwid 対象サービス不明
+          %td.td_padding
+            %img{:src => "/images/1x1.gif"}
+          %td.brick_productname{:colspan => 3} コンテンツ不明
+          %td.td_padding
+            %img{:src => "/images/1x1.gif"}
+          %td.brick_delivered&= service_unknowns.size.to_s + '台'
+          %td.td_line_term
+            %img{:src => "/images/1x1.gif"}
+        - total_bricks += service_unknowns.size
+        - service_unknowns.each do |b|
+          = haml :brick, :locals => {:brick => b}
+      %tr.servedbrick_service
+        %td.brick_status_in_use
+          %div.header_status
+        %td.brick_hwid{:colspan => 3} 合計
+        %td.td_padding
+          %img{:src => "/images/1x1.gif"}
+        %td.brick_delivered{:colspan => 3}&= total_bricks.to_s + '台'
+        %td.td_line_term
+          %img{:src => "/images/1x1.gif"}
