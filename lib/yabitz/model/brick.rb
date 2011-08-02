@@ -83,6 +83,8 @@ module Yabitz
         result_by_id = {}
         service_oid_list = []
         self.dig(from, to).each do |brick_history|
+          next if brick_history.first.removed
+
           object_first_served = nil
           brick_history.reverse.each do |brick|
             if [STATUS_IN_USE, STATUS_REPAIR, STATUS_BROKEN].include?(brick.status)
