@@ -2736,9 +2736,9 @@ EOT
     authorized?
     @served_records = nil
     from = params[:from] if not from and params[:from]
-    to = params[:to] if not to and params[:to] and params[:to].size > 0
+    to = params[:to] if not to and params[:to] and params[:to].length > 0
 
-    if from
+    if from and from.length > 0
       raise ArgumentError, "invalid from" unless from and from =~ /^\d\d\d\d-\d\d-\d\d$/
       raise ArgumentError, "invalid to" unless to.nil? or to =~ /^\d\d\d\d-\d\d-\d\d$/
       from_full = from + ' 00:00:00'
