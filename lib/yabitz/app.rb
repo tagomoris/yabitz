@@ -2483,6 +2483,7 @@ EOT
         brick.productname = params["productname#{i}"].strip
         brick.hwid = params["hwid#{i}"].strip
         brick.serial = params["serial#{i}"].strip
+        brick.heap = params["heap#{i}"].strip
         brick.delivered = params["delivered"]
         brick.status = params["status"]
         brick.save
