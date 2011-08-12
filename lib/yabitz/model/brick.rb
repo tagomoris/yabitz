@@ -14,11 +14,12 @@ module Yabitz
 
       STATUS_STOCK = 'STOCK'
       STATUS_IN_USE = 'IN_USE'
+      STATUS_SPARE = 'SPARE'
       STATUS_REPAIR = 'REPAIR'
       STATUS_BROKEN = 'BROKEN'
-      STATUS_LIST = [STATUS_STOCK, STATUS_IN_USE, STATUS_REPAIR, STATUS_BROKEN]
+      STATUS_LIST = [STATUS_STOCK, STATUS_IN_USE, STATUS_SPARE, STATUS_REPAIR, STATUS_BROKEN]
 
-      STATUS_ORDER_MAP = {STATUS_STOCK => 0, STATUS_REPAIR => 1, STATUS_BROKEN => 2, STATUS_IN_USE => 3}
+      STATUS_ORDER_MAP = {STATUS_STOCK => 0, STATUS_REPAIR => 1, STATUS_SPARE => 2, STATUS_BROKEN => 3, STATUS_IN_USE => 4}
 
       table :bricks
       field :hwid, :string, :length => 16
@@ -122,6 +123,8 @@ module Yabitz
           "在庫"
         when STATUS_IN_USE
           "使用中"
+        when STATUS_SPARE
+          "障害交換用"
         when STATUS_REPAIR
           "修理中"
         when STATUS_BROKEN

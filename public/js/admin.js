@@ -63,7 +63,9 @@ function dispatch_admin_operation(event) {
         case 'status_in_use':
         case 'status_repair':
         case 'status_broken':
-        case 'status_stock': dialogtype = 'confirm_dialog'; break;
+        case 'status_stock':
+        case 'status_spare': dialogtype = 'confirm_dialog'; break;
+        case 'set_heap': dialogtype = 'form_dialog'; break;
         case 'delete_records': dialogtype = 'confirm_dialog'; break;
         };
     }

@@ -2543,63 +2543,15 @@ EOT
     end
   end
 
-  get %r!/ybz/bricks/list/stock(\.json|\.csv)?! do |ctype|
+  get %r!/ybz/bricks/list/(stock|in_use|spare|repair|broken)(\.json|\.csv)?! do |statuslabel, ctype|
     authorized?
-    targetstatus = Yabitz::Model::Brick::STATUS_STOCK
-    @bricks = Yabitz::Model::Brick.query(:status => targetstatus)
-    case ctype
-    when '.json'
-      response['Content-Type'] = 'application/json'
-      @bricks.to_json
-    when '.csv'
-      response['Content-Type'] = 'text/csv'
-      Yabitz::Model::Brick.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, @bricks)
-    else
-      @bricks.sort!
-      statustitle = Yabitz::Model::Brick.status_title(targetstatus)
-      @page_title = "機器一覧 (#{statustitle})"
-      haml :bricks, :locals => {:cond => statustitle}
-    end
-  end
-  get %r!/ybz/bricks/list/in_use(\.json|\.csv)?! do |ctype|
-    authorized?
-    targetstatus = Yabitz::Model::Brick::STATUS_IN_USE
-    @bricks = Yabitz::Model::Brick.query(:status => targetstatus)
-    case ctype
-    when '.json'
-      response['Content-Type'] = 'application/json'
-      @bricks.to_json
-    when '.csv'
-      response['Content-Type'] = 'text/csv'
-      Yabitz::Model::Brick.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, @bricks)
-    else
-      @bricks.sort!
-      statustitle = Yabitz::Model::Brick.status_title(targetstatus)
-      @page_title = "機器一覧 (#{statustitle})"
-      haml :bricks, :locals => {:cond => statustitle}
-    end
-  end
-  get %r!/ybz/bricks/list/repair(\.json|\.csv)?! do |ctype|
-    authorized?
-    targetstatus = Yabitz::Model::Brick::STATUS_REPAIR
-    @bricks = Yabitz::Model::Brick.query(:status => targetstatus)
-    case ctype
-    when '.json'
-      response['Content-Type'] = 'application/json'
-      @bricks.to_json
-    when '.csv'
-      response['Content-Type'] = 'text/csv'
-      Yabitz::Model::Brick.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, @bricks)
-    else
-      @bricks.sort!
-      statustitle = Yabitz::Model::Brick.status_title(targetstatus)
-      @page_title = "機器一覧 (#{statustitle})"
-      haml :bricks, :locals => {:cond => statustitle}
-    end
-  end
-  get %r!/ybz/bricks/list/broken(\.json|\.csv)?! do |ctype|
-    authorized?
-    targetstatus = Yabitz::Model::Brick::STATUS_BROKEN
+    targetstatus = case statuslabel
+                   when 'stock'  then Yabitz::Model::Brick::STATUS_STOCK
+                   when 'in_use' then Yabitz::Model::Brick::STATUS_IN_USE
+                   when 'spare'  then Yabitz::Model::Brick::STATUS_SPARE
+                   when 'repair' then Yabitz::Model::Brick::STATUS_REPAIR
+                   when 'broken' then Yabitz::Model::Brick::STATUS_BROKEN
+                   end
     @bricks = Yabitz::Model::Brick.query(:status => targetstatus)
     case ctype
     when '.json'
@@ -2684,6 +2636,18 @@ EOT
     when 'status_in_use', 'status_repair', 'status_broken', 'status_stock'
       st_title = Yabitz::Model::Brick.status_title(params[:ope] =~ /\Astatus_(.+)\Z/ ? $1.upcase : nil)
       "状態: #{st_title} へ変更していいですか？"
+    when 'status_spare'
+      if bricks.select{|b| b.heap.nil? or b.heap == ''}.size > 0
+        halt HTTP_STATUS_NOT_ACCEPTABLE, "指定された機器に置き場所不明のものがあります<br />入力してからやりなおしてください"
+      end
+      "状態 #{Yabitz::Model::Brick.status_title(Yabitz::Model::Brick::STATUS_SPARE)} へ変更していいですか？"
+    when 'set_heap'
+      set_heap_template = <<EOT
+%div 選択した機器の置き場所を入力してください
+%div
+  %input{:type => "text", :name => "heap", :size => 16}
+EOT
+      haml set_heap_template, :layout => false
     when 'delete_records'
       "選択された機器すべてのデータを削除して本当にいいですか？<br />" + bricks.map{|brick| h(brick.to_s)}.join('<br />')
     else
@@ -2706,6 +2670,21 @@ EOT
       Stratum.transaction do |conn|
         bricks.each do |brick|
           brick.status = new_status
+          brick.save
+        end
+      end
+    when 'status_spare'
+      raise ArgumentError if bricks.select{|b| b.heap.nil? or b.heap == ''}.size > 0
+      Stratum.transaction do |conn|
+        bricks.each do |brick|
+          brick.status = Yabitz::Model::Brick::STATUS_SPARE
+          brick.save
+        end
+      end
+    when 'set_heap'
+      Stratum.transaction do |conn|
+        bricks.each do |brick|
+          brick.heap = params[:heap]
           brick.save
         end
       end
