@@ -27,13 +27,14 @@ module Yabitz
       fieldex :delivered, "例: 2011-07-05"
       field :status, :string, :selector => STATUS_LIST, :default => STATUS_STOCK
       field :serial, :string, :length => 1024, :empty => :ok
+      field :heap, :string, :length => 128, :empty => :ok
       field :notes, :string, :length => 4096, :empty => :ok
 
       CSVFIELDS = [:oid, :hwid, :productname, :delivered, :status, :serial]
 
       def self.instanciate_mapping(fieldname)
         case fieldname
-        when :hwid, :productname, :delivered, :status, :serial, :notes
+        when :hwid, :productname, :delivered, :status, :serial, :heap, :notes
           {:method => :new, :class => String}
         else
           raise ArgumentError, "unknown field name #{fieldname}"
