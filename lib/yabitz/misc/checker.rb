@@ -12,6 +12,7 @@ module Yabitz::Checker
     ipaddrs = Yabitz::Model::IPAddress.all
     rackunits = Yabitz::Model::RackUnit.all
     contacts = Yabitz::Model::Contact.all
+    bricks = Yabitz::Model::Brick.all
 
     hwid_hosts = {}
 
@@ -28,6 +29,12 @@ module Yabitz::Checker
     ipaddress_duplications = []
     
     services_without_contacts = []
+
+    bricks_hwid_duplications = []
+    bricks_serial_duplications = []
+    bricks_without_hwid_serial = []
+    bricks_status_hwid_host_mismatches = []
+    bricks_status_heap_mismatches = []
 
     def self.working?(host)
       [
@@ -129,6 +136,52 @@ module Yabitz::Checker
       end
     end
 
+    bricks_hwid = {}
+    bricks_serial = {}
+
+    bricks.each do |brick|
+      # for check: 2 or more bricks has same hwid
+      if brick.hwid and not brick.hwid.empty?
+        bricks_hwid[brick.hwid] ||= []
+        bricks_hwid[brick.hwid].push(brick)
+      end
+
+      # for check: 2 or more bricks has same serial
+      if brick.serial and not brick.serial.empty?
+        bricks_serial[brick.serial] ||= []
+        bricks_serial[brick.serial].push(brick)
+      end
+
+      # check: bricks without hwid and/or serial
+      unless (brick.hwid and not brick.hwid.empty?) or (brick.serial and not brick.serial.empty?)
+        bricks_without_hwid_serial.push(brick) 
+      end
+      
+      # check: bricks in (IN_USE, but thats hwid not connected to host), (STOCK/SPARE/REPAIR/BROKEN, but connected to host)
+      if brick.status == Yabitz::Model::Brick::STATUS_IN_USE
+        if brick.hwid and (not hwid_hosts[brick.hwid] or hwid_hosts[brick.hwid].length == 0)
+          bricks_status_hwid_host_mismatches.push(brick)
+        end
+      else
+        if brick.hwid and hwid_hosts[brick.hwid] and hwid_hosts[brick.hwid].length > 0
+          bricks_status_hwid_host_mismatches.push(brick)
+        end
+      end
+
+      # check: bricks in STOCK/SPARE/BROKEN but without heap
+      if [Yabitz::Model::Brick::STATUS_STOCK, Yabitz::Model::Brick::STATUS_SPARE, Yabitz::Model::Brick::STATUS_BROKEN].include?(brick.status)
+        if not brick.heap or brick.heap.empty?
+          bricks_status_heap_mismatches.push(brick)
+        end
+      end
+    end
+
+    # check: 2 or more bricks has same hwid
+    bricks_hwid_duplications = bricks_hwid.values.select{|ary| ary.length > 1}
+
+    # check: 2 or more bricks has same serial
+    bricks_serial_duplications = bricks_serial.values.select{|ary| ary.length > 1}
+
     {
       :host_relation_mismatches => host_relation_mismatches,
       :type_and_hwinfo_mismatches => type_and_hwinfo_mismatches,
@@ -141,6 +194,11 @@ module Yabitz::Checker
       :rackunit_missings => rackunit_missings,
       :ipaddress_duplications => ipaddress_duplications,
       :services_without_contacts => services_without_contacts,
+      :bricks_hwid_duplications => bricks_hwid_duplications,
+      :bricks_serial_duplications => bricks_serial_duplications,
+      :bricks_without_hwid_serial => bricks_without_hwid_serial,
+      :bricks_status_hwid_host_mismatches => bricks_status_hwid_host_mismatches,
+      :bricks_status_heap_mismatches => bricks_status_heap_mismatches,
     }
   end
 

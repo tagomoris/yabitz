@@ -213,4 +213,95 @@
         %img{:src => "/images/1x1.gif"}
       %td.td_line_term
         %img{:src => "/images/1x1.gif"}
-
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} HWIDが重複している機器
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:bricks_hwid_duplications].each do |ary|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/smartsearch?keywords=#{ary.first.hwid}"}&= ary.first.hwid
+      %td.checker_info
+        %ul
+          - ary.each do |b|
+            %li
+              %a{:href => "/ybz/brick/#{b.oid}"}&= b.to_s
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} シリアルが重複している機器
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:bricks_serial_duplications].each do |ary|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/smartsearch?keywords=#{ary.first.serial}"}&= ary.first.serial
+      %td.checker_info
+        %ul
+          - ary.each do |b|
+            %li
+              %a{:href => "/ybz/brick/#{b.oid}"}&= b.to_s
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} HWIDもしくはシリアルが未登録の機器
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:bricks_without_hwid_serial].each do |b|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/brick/#{b.oid}"}&= b.to_s
+      %td.checker_info
+        HWID:#{(b.hwid and not b.hwid.empty?) ? b.hwid : 'none'}, シリアル:#{(b.serial and not b.serial.empty?) ? b.serial : 'none'}
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} 使用中だがHWIDの登録がホストにない機器、HWIDのホスト登録があるが使用中ではない機器
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:bricks_status_hwid_host_mismatches].each do |b|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/brick/#{b.oid}"}&= b.to_s
+      %td.checker_info
+        &= Yabitz::Model::Brick.status_title(b.status)
+        %a{:href => "/ybz/smartsearch?keywords=#{b.hwid}"}&= b.hwid
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} 置き場所登録が必要だが未登録の機器
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:bricks_status_heap_mismatches].each do |b|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/brick/#{b.oid}"}&= b.to_s
+      %td.checker_info
+        %img{:src => "/images/1x1.gif"}
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
