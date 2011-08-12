@@ -411,6 +411,19 @@ class Yabitz::Application < Sinatra::Base
         host.globalips = params["globalips#{i}"].split(/\s+/).select{|n|n.size > 0}.map{|gip| Yabitz::Model::IPAddress.query_or_create(:address => gip)}
         host.virtualips = params["virtualips#{i}"].split(/\s+/).select{|n|n.size > 0}.map{|gip| Yabitz::Model::IPAddress.query_or_create(:address => gip)}
 
+        if host.hwid and host.hwid.length > 0 and not hosttype.virtualmachine?
+          bricks = Yabitz::Model::Brick.query(:hwid => host.hwid)
+          if bricks.size == 1 and host.rackunit
+            brick = bricks.first
+            unless bricks.first.status == Yabitz::Model::Brick::STATUS_STOCK
+              raise Yabitz::InconsistentDataError, "指定されたhwid #{host.hwid} に対応する機器に「#{Yabitz::Model::Brick.status_title(Yabitz::Model::Brick::STATUS_STOCK)}」以外のものがあります"
+            end
+            brick.status = Yabitz::Model::Brick::STATUS_IN_USE
+            brick.heap = host.rackunit.rackunit
+            brick.save
+          end
+        end
+
         tags = Yabitz::Model::TagChain.new
         tags.tagchain = ([opetag] + params["tagchain#{i}"].strip.split(/\s+/)).flatten.compact
         host.tagchain = tags
