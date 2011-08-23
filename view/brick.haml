@@ -1,4 +1,5 @@
 -# coding: utf-8
+- show_served ||= false
 %tr.brick_item.selectable{:id => (@brick_unselectable ? "" : brick.oid), :title => h(brick.to_s)}
   - case brick.status
   - when Yabitz::Model::Brick::STATUS_STOCK
@@ -34,5 +35,11 @@
     %img{:src => "/images/1x1.gif"}
   %td.brick_delivered
     &= brick.delivered
+  - if show_served
+    %td.td_padding
+      %img{:src => "/images/1x1.gif"}
+    %td.brick_delivered
+      &= brick.served
+      %img{:src => "/images/1x1.gif"}
   %td.td_line_term
     %img{:src => "/images/1x1.gif"}

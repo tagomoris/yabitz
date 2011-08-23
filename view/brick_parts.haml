@@ -13,6 +13,7 @@
     %span.value&= Yabitz::Model::Brick.status_title(@brick.status)
   = field_editable 'brick', @brick, :text, :serial, "シリアル番号", @brick.serial, "不明"
   = field_editable 'brick', @brick, :text, :delivered, "納品日", @brick.delivered, "不明"
+  = field_editable 'brick', @brick, :text, :served, "利用開始日", @brick.served, "未登録"
   = field_editable 'brick', @brick, :text, :heap, "置き場所", @brick.heap, "登録なし"
   - if @user
     %form.inline.field_edit_form{:name => "fieldedit", :action => "/ybz/brick/#{@brick.oid}", :method => "POST", :onsubmit => "return false;"}

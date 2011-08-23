@@ -27,15 +27,17 @@ module Yabitz
       field :delivered, :string, :validator => 'check_delivered', :normalizer => 'normalize_delivered'
       fieldex :delivered, "例: 2011-07-05"
       field :status, :string, :selector => STATUS_LIST, :default => STATUS_STOCK
+      field :served, :string, :validator => 'check_delivered', :normalizer => 'normalize_delivered'
+      fieldex :delivered, "例: 2011-08-23"
       field :serial, :string, :length => 1024, :empty => :ok
       field :heap, :string, :length => 128, :empty => :ok
       field :notes, :string, :length => 4096, :empty => :ok
 
-      CSVFIELDS = [:oid, :hwid, :productname, :delivered, :status, :serial]
+      CSVFIELDS = [:oid, :hwid, :productname, :delivered, :status, :served, :serial]
 
       def self.instanciate_mapping(fieldname)
         case fieldname
-        when :hwid, :productname, :delivered, :status, :serial, :heap, :notes
+        when :hwid, :productname, :delivered, :status, :served, :serial, :heap, :notes
           {:method => :new, :class => String}
         else
           raise ArgumentError, "unknown field name #{fieldname}"
@@ -50,6 +52,13 @@ module Yabitz
         # status(stock->repair->broken->in_use?) -> hwid
         return STATUS_ORDER_MAP[self.status] <=> STATUS_ORDER_MAP[other.status] unless self.status == other.status
         self.hwid <=> other.hwid
+      end
+
+      def served!
+        if self.status == STATUS_STOCK
+          self.status = STATUS_IN_USE
+        end
+        self.served = Time.now.strftime('%Y-%m-%d')
       end
 
       def self.normalize_delivered(str)
@@ -83,33 +92,18 @@ module Yabitz
       def self.served_between(from, to)
         # {service => [brick, brick, ...], ...}
         result_by_id = {}
-        service_oid_list = []
-        self.dig(from, to).each do |brick_history|
-          next if brick_history.first.removed
-
-          object_first_served = nil
-          brick_history.reverse.each do |brick|
-            if [STATUS_IN_USE, STATUS_REPAIR, STATUS_BROKEN].include?(brick.status)
-              object_first_served = brick
-              break
-            end
-          end
-          next unless object_first_served
-          first_served_at = object_first_served.inserted_at.to_s
-          if from <= first_served_at and (to.nil? or first_served_at <= to)
-            hwid_relateds = Yabitz::Model::Host.query(:hwid => object_first_served.hwid, :before => to).select{|h| h.parent_by_id.nil?}
-            target_service_oid = nil
-            target_service_oid = hwid_relateds.first.service_by_id if hwid_relateds.size > 0
-            result_by_id[target_service_oid] ||= []
-            result_by_id[target_service_oid].push(brick_history.first)
-            service_oid_list.push(target_service_oid)
-          end
+        bricks = self.choose(:served, :lowlevel => true){|s| s and s >= from and s <= to}
+        bricks.each do |brick|
+          relateds = Yabitz::Model::Host.query(:hwid => brick.hwid, :before => brick.served + '23:59:59').select{|h| h.parent_by_id.nil?}
+          target_service_oid = nil
+          target_service_oid = relateds.first.service_by_id if relateds.size > 0
+          result_by_id[target_service_oid] ||= []
+          result_by_id[target_service_oid].push(brick)
         end
         service_unknowns = result_by_id.delete(nil)
-        services = Yabitz::Model::Service.get(service_oid_list)
         result = {}
-        service_oid_list.each do |service_oid|
-          result[services.select{|s| s.oid == service_oid}.first] = result_by_id[service_oid]
+        Yabitz::Model::Service.get(result_by_id.keys).each do |service|
+          result[service] = result_by_id[service.oid]
         end
         if service_unknowns
           result[nil] = service_unknowns

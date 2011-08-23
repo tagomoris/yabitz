@@ -42,11 +42,14 @@
           %td.td_padding
             %img{:src => "/images/1x1.gif"}
           %td.brick_delivered&= @served_records[service].size.to_s + '台'
+          %td.td_padding
+            %img{:src => "/images/1x1.gif"}
+          %td.brick_delivered 利用開始日
           %td.td_line_term
             %img{:src => "/images/1x1.gif"}
         - total_bricks += @served_records[service].size
         - @served_records[service].each do |brick|
-          = haml :brick, :locals => {:brick => brick}
+          = haml :brick, :locals => {:brick => brick, :show_served => true}
       - if service_unknowns
         %tr.servedbrick_service
           %td.brick_status_in_use
@@ -58,17 +61,20 @@
           %td.td_padding
             %img{:src => "/images/1x1.gif"}
           %td.brick_delivered&= service_unknowns.size.to_s + '台'
+          %td.td_padding
+            %img{:src => "/images/1x1.gif"}
+          %td.brick_delivered 利用開始日
           %td.td_line_term
             %img{:src => "/images/1x1.gif"}
         - total_bricks += service_unknowns.size
         - service_unknowns.each do |b|
-          = haml :brick, :locals => {:brick => b}
+          = haml :brick, :locals => {:brick => b, :show_served => true}
       %tr.servedbrick_service
         %td.brick_status_in_use
           %div.header_status
         %td.brick_hwid{:colspan => 3} 合計
         %td.td_padding
           %img{:src => "/images/1x1.gif"}
-        %td.brick_delivered{:colspan => 3}&= total_bricks.to_s + '台'
+        %td.brick_delivered{:colspan => 5}&= total_bricks.to_s + '台'
         %td.td_line_term
           %img{:src => "/images/1x1.gif"}

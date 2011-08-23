@@ -418,7 +418,8 @@ class Yabitz::Application < Sinatra::Base
             unless bricks.first.status == Yabitz::Model::Brick::STATUS_STOCK
               raise Yabitz::InconsistentDataError, "指定されたhwid #{host.hwid} に対応する機器に「#{Yabitz::Model::Brick.status_title(Yabitz::Model::Brick::STATUS_STOCK)}」以外のものがあります"
             end
-            brick.status = Yabitz::Model::Brick::STATUS_IN_USE
+            brick.served!
+            # brick.status = Yabitz::Model::Brick::STATUS_IN_USE
             brick.heap = host.rackunit.rackunit
             brick.save
           end
@@ -2661,6 +2662,13 @@ EOT
   %input{:type => "text", :name => "heap", :size => 16}
 EOT
       haml set_heap_template, :layout => false
+    when 'set_served'
+      set_served_template = <<EOT
+%div 選択した機器の利用開始日を入力してください
+%div
+  %input{:type => "text", :name => "served", :size => 16}
+EOT
+      haml set_served_template, :layout => false
     when 'delete_records'
       "選択された機器すべてのデータを削除して本当にいいですか？<br />" + bricks.map{|brick| h(brick.to_s)}.join('<br />')
     else
@@ -2701,6 +2709,13 @@ EOT
           brick.save
         end
       end
+    when 'set_served'
+      Stratum.transaction do |conn|
+        bricks.each do |brick|
+          brick.served = params[:served]
+          brick.save
+        end
+      end
     when 'delete_records'
       Stratum.transaction do |conn|
         bricks.each do |brick|
@@ -2734,9 +2749,8 @@ EOT
     if from and from.length > 0
       raise ArgumentError, "invalid from" unless from and from =~ /^\d\d\d\d-\d\d-\d\d$/
       raise ArgumentError, "invalid to" unless to.nil? or to =~ /^\d\d\d\d-\d\d-\d\d$/
-      from_full = from + ' 00:00:00'
-      to_full = to + ' 23:59:59' if to
-      @served_records = Yabitz::Model::Brick.served_between(from_full, to_full)
+      to = Time.now.strftime('%Y-%m-%d') if to.nil?
+      @served_records = Yabitz::Model::Brick.served_between(from, to)
     end
     case ctype
     when '.json'
