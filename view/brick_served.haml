@@ -29,9 +29,11 @@
 %div#maincontents
   %table#servedbricklist
     - if @served_records
+      - codes = {}
       - total_bricks = 0
       - service_unknowns = @served_records.delete(nil)
       - @served_records.keys.each do |service|
+        - codes[service.content.code] ||= {}
         %tr.servedbrick_service
           %td.brick_status_in_use
             %div.header_status
@@ -49,8 +51,11 @@
             %img{:src => "/images/1x1.gif"}
         - total_bricks += @served_records[service].size
         - @served_records[service].each do |brick|
+          - codes[service.content.code][brick.productname] ||= 0
+          - codes[service.content.code][brick.productname] += 1
           = haml :brick, :locals => {:brick => brick, :show_served => true}
       - if service_unknowns
+        - codes['不明'] = {}
         %tr.servedbrick_service
           %td.brick_status_in_use
             %div.header_status
@@ -67,8 +72,10 @@
           %td.td_line_term
             %img{:src => "/images/1x1.gif"}
         - total_bricks += service_unknowns.size
-        - service_unknowns.each do |b|
-          = haml :brick, :locals => {:brick => b, :show_served => true}
+        - service_unknowns.each do |brick|
+          - codes['不明'][brick.productname] ||= 0
+          - codes['不明'][brick.productname] += 1
+          = haml :brick, :locals => {:brick => brick, :show_served => true}
       %tr.servedbrick_service
         %td.brick_status_in_use
           %div.header_status
@@ -78,3 +85,17 @@
         %td.brick_delivered{:colspan => 5}&= total_bricks.to_s + '台'
         %td.td_line_term
           %img{:src => "/images/1x1.gif"}
+      - codes.keys.sort.each do |code|
+        - codes[code].keys.sort.each do |product|
+          %tr.servedbrick_service
+            %td.brick_status_in_use
+              %div.header_status
+            %td.brick_hwid{:colspan => 3} コード #{h(code)}
+            %td.td_padding
+              %img{:src => "/images/1x1.gif"}
+            %td.brick_delivered{:colspan => 3}&= product
+            %td.td_padding
+              %img{:src => "/images/1x1.gif"}
+            %td.brick_delivered&= codes[code][product]
+            %td.td_line_term
+              %img{:src => "/images/1x1.gif"}
