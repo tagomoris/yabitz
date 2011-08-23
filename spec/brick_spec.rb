@@ -119,13 +119,13 @@ describe Yabitz::Model::Brick do
 
   it "の .build_raw_csv が正常に内部データのCSV表現を返すこと" do
     t1 = @cls.query_or_create(:status => Yabitz::Model::Brick::STATUS_STOCK, :hwid => 'X1111', :productname => 'RX100', :delivered => '2011-07-01', :serial => '00001-XXX1-F1')
-    t2 = @cls.query_or_create(:status => Yabitz::Model::Brick::STATUS_IN_USE, :hwid => 'X1112', :productname => 'RX100 "xxx"', :delivered => '2011-07-01', :serial => '00001-XXX1-F1')
-    t3 = @cls.query_or_create(:status => Yabitz::Model::Brick::STATUS_IN_USE, :hwid => 'Y99', :productname => 'MacBookAir, early 2011', :delivered => '2011/07/01', :serial => '00002 ZZZZ 0X')
+    t2 = @cls.query_or_create(:status => Yabitz::Model::Brick::STATUS_IN_USE, :hwid => 'X1112', :productname => 'RX100 "xxx"', :delivered => '2011-07-01', :served => '2011-08-11', :serial => '00001-XXX1-F1')
+    t3 = @cls.query_or_create(:status => Yabitz::Model::Brick::STATUS_IN_USE, :hwid => 'Y99', :productname => 'MacBookAir, early 2011', :delivered => '2011/07/01', :served => '2012-02-29', :serial => '00002 ZZZZ 0X')
 
-    # CSVFIELDS = [:oid, :hwid, :productname, :delivered, :status, :serial]
-    header = "OID,HWID,PRODUCTNAME,DELIVERED,STATUS,SERIAL\n"
-    @cls.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, [t1]).should eql(header + t1.oid.to_s + ',X1111,RX100,2011-07-01,STOCK,00001-XXX1-F1' + "\n")
-    @cls.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, [t2]).should eql(header + t2.oid.to_s + ',X1112,"RX100 ""xxx""",2011-07-01,IN_USE,00001-XXX1-F1' + "\n")
-    @cls.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, [t3]).should eql(header + t3.oid.to_s + ',Y99,"MacBookAir, early 2011",2011-07-01,IN_USE,00002 ZZZZ 0X' + "\n")
+    # CSVFIELDS = [:oid, :hwid, :productname, :delivered, :status, :served, :serial]
+    header = "OID,HWID,PRODUCTNAME,DELIVERED,STATUS,SERVED,SERIAL\n"
+    @cls.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, [t1]).should eql(header + t1.oid.to_s + ',X1111,RX100,2011-07-01,STOCK,"",00001-XXX1-F1' + "\n")
+    @cls.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, [t2]).should eql(header + t2.oid.to_s + ',X1112,"RX100 ""xxx""",2011-07-01,IN_USE,2011-08-11,00001-XXX1-F1' + "\n")
+    @cls.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, [t3]).should eql(header + t3.oid.to_s + ',Y99,"MacBookAir, early 2011",2011-07-01,IN_USE,2012-02-29,00002 ZZZZ 0X' + "\n")
   end
 end
