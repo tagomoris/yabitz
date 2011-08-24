@@ -32,8 +32,9 @@
       - codes = {}
       - total_bricks = 0
       - service_unknowns = @served_records.delete(nil)
-      - @served_records.keys.each do |service|
-        - codes[service.content.code] ||= {}
+      - @served_records.keys.sort{|a,b| (a.content.code || 'NONE') <=> (b.content.code || 'NONE')}.each do |service|
+        - c_code = service.content.code || 'NONE'
+        - codes[c_code] ||= {}
         %tr.servedbrick_service
           %td.brick_status_in_use
             %div.header_status
@@ -51,8 +52,8 @@
             %img{:src => "/images/1x1.gif"}
         - total_bricks += @served_records[service].size
         - @served_records[service].each do |brick|
-          - codes[service.content.code][brick.productname] ||= 0
-          - codes[service.content.code][brick.productname] += 1
+          - codes[c_code][brick.productname] ||= 0
+          - codes[c_code][brick.productname] += 1
           = haml :brick, :locals => {:brick => brick, :show_served => true}
       - if service_unknowns
         - codes['不明'] = {}
