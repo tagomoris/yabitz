@@ -32,7 +32,7 @@
       - codes = {}
       - total_bricks = 0
       - service_unknowns = @served_records.delete(nil)
-      - @served_records.keys.sort{|a,b| (a.content.code || 'NONE') <=> (b.content.code || 'NONE')}.each do |service|
+      - @served_records.keys.sort{|a,b| ((a.content.code && a.content.code.length > 0) ? a.content.code : 'NONE') <=> (b.content.code && b.content.code.length > 0) ? b.content.code : 'NONE')}.each do |service|
         - c_code = (service.content.code && service.content.code.length > 0) ? service.content.code : 'NONE'
         - codes[c_code] ||= {}
         %tr.servedbrick_service
