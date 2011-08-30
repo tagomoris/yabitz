@@ -168,6 +168,7 @@ yabitz の動作設定を config プラグインとして作成します。と�
 
 * 添付の instant_membersource プラグインを使用する
     * lib/yabitz/plugin/instant_membersource.rb
+        * ただしデフォルトで無効になっているため、ファイルの def self.plugin_priority の中身を 1 に修正してください
     * プラグイン内で指定するデータベースに認証情報マスタとなるテーブルを作成し、参照します
     * 全ユーザ情報をあらかじめこのテーブルに登録する必要があります
         * いちおう登録・編集用のコマンドラインインターフェイスを提供するスクリプトを同梱してありますが、機能は貧弱です
@@ -179,7 +180,8 @@ yabitz の動作設定を config プラグインとして作成します。と�
 
     $ vi scripts/instant/db_schema_membersource.rb # データベース名およびテーブル名を編集(問題なければデフォルトのままで)
     $ vi lib/yabitz/plugin/instant_membersource.rb # データベースのホスト名、ユーザ名とパスワード、データベース名およびテーブル名を編集
-    $ ruby scripts/instant/db_schema_membersource.rb
+    $ ruby scripts/instant/db_schema_membersource.rb HOSTNAME USERNAME [PASSWORD]
+       (たとえば ruby scripts/instant/db_schema_membersource.rb localhost root などとして実行)
 
 上記コマンド実行後、最低限のユーザ登録を済ませます(データベース名やテーブル名を変更した場合は実行前にこのスクリプトの記述も修正すること。)。データベースへの接続にパスワードが必要な場合は最後に -p を指定すると、プロンプトで確認されます。
 
