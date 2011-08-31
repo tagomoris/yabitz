@@ -6,12 +6,12 @@
     %input{:type => "hidden", :name => "type", :value => "brick"}
   %h3
     機器
-  = field_editable 'brick', @brick, :text, :hwid, "HWID", @brick.hwid, "不明"
+  = field_editable 'brick', @brick, :text, :hwid, "HWID", @brick.hwid, "不明", :link => "/ybz/smartsearch?keywords=" + h(@brick.hwid)
   = field_editable 'brick', @brick, :text, :productname, "製品名", @brick.productname, "不明"
   %div.fieldvalue
     %span.field 状態:
     %span.value&= Yabitz::Model::Brick.status_title(@brick.status)
-  = field_editable 'brick', @brick, :text, :serial, "シリアル番号", @brick.serial, "不明"
+  = field_editable 'brick', @brick, :text, :serial, "シリアル番号", @brick.serial, "不明", :link => "/ybz/smartsearch?keywords=" + h(@brick.serial)
   = field_editable 'brick', @brick, :text, :delivered, "納品日", @brick.delivered, "不明"
   = field_editable 'brick', @brick, :text, :served, "利用開始日", @brick.served, "未登録"
   = field_editable 'brick', @brick, :text, :heap, "置き場所", @brick.heap, "登録なし"
