@@ -9,7 +9,7 @@ module Yabitz::Plugin
       [:auth, :member]
     end
     def self.plugin_priority
-      0
+      100
     end
 
     DB_HOSTNAME = "localhost"
@@ -25,10 +25,6 @@ module Yabitz::Plugin
       st.execute(*args)
       st.each{|r| result.push(r.map{|v| v.respond_to?(:encode) ? v.encode('utf-8') : v})}
       st.free_result
-      result.each do |r|
-        p r
-        p r.map(&:encoding)
-      end
       result
     end
 
