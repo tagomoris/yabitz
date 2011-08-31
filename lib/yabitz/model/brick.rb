@@ -94,7 +94,7 @@ module Yabitz
         result_by_id = {}
         bricks = self.choose(:served, :lowlevel => true){|s| s and s >= from and s <= to}
         bricks.each do |brick|
-          relateds = Yabitz::Model::Host.query(:hwid => brick.hwid, :before => brick.served + '23:59:59').select{|h| h.parent_by_id.nil?}
+          relateds = Yabitz::Model::Host.query(:hwid => brick.hwid, :before => to + ' 23:59:59').select{|h| h.parent_by_id.nil?}
           target_service_oid = nil
           target_service_oid = relateds.first.service_by_id if relateds.size > 0
           result_by_id[target_service_oid] ||= []
