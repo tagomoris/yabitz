@@ -117,6 +117,14 @@ describe Yabitz::Model::Brick do
     @t.status.should eql(Yabitz::Model::Brick::STATUS_IN_USE)
   end
 
+  it "を served! したとき、既に served に値があるものは変わらないこと" do
+    @t.status.should eql(Yabitz::Model::Brick::STATUS_STOCK)
+    @t.served = '2011-07-01'
+    @t.served!
+    @t.served.should eql('2011-07-01')
+    @t.status.should eql(Yabitz::Model::Brick::STATUS_IN_USE)
+  end
+
   it "の .build_raw_csv が正常に内部データのCSV表現を返すこと" do
     t1 = @cls.query_or_create(:status => Yabitz::Model::Brick::STATUS_STOCK, :hwid => 'X1111', :productname => 'RX100', :delivered => '2011-07-01', :serial => '00001-XXX1-F1')
     t2 = @cls.query_or_create(:status => Yabitz::Model::Brick::STATUS_IN_USE, :hwid => 'X1112', :productname => 'RX100 "xxx"', :delivered => '2011-07-01', :served => '2011-08-11', :serial => '00001-XXX1-F1')

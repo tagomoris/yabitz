@@ -318,58 +318,6 @@ class Yabitz::Application < Sinatra::Base
     haml :host_create, :locals => {:cond => @page_title, :target => target_service}
   end
 
-  put '/ybz/host/create' do
-    admin_protected!
-
-    json = JSON.load(request.body)
-    Stratum.transaction do |conn|
-      content = json['content']
-      content.keys.each do |k|
-        content[k] = nil if content[k] and content[k] == ""
-      end
-
-      host = Yabitz::Model::Host.new
-      host.service = Yabitz::Model::Service.get(content['service'].to_i)
-      host.status = content['status']
-      host.type = Yabitz::HostType.new(content['type']).name
-      host.rackunit = content['rackunit'] && Yabitz::Model::RackUnit.query_or_create(:rackunit => content['rackunit'])
-      host.hwid = content['hwid']
-      host.hwinfo = content['hwinfo'] && Yabitz::Model::HwInformation.query_or_create(:name => content['hwinfo'])
-      host.memory = content['memory']
-      host.disk = content['disk']
-      host.os = content['os'] && Yabitz::Model::OSInformation.query_or_create(:name => content['os']).name
-      host.dnsnames = content['dnsnames'] && content['dnsnames'].map{|dns| Yabitz::Model::DNSName.query_or_create(:dnsname => dns)}
-      host.localips = content['localips'] && content['localips'].map{|lip| Yabitz::Model::IPAddress.query_or_create(:address => lip)}
-      host.globalips = content['globalips'] && content['globalips'].map{|gip| Yabitz::Model::IPAddress.query_or_create(:address => gip)}
-      host.virtualips = content['virtualips'] && content['virtualips'].map{|gip| Yabitz::Model::IPAddress.query_or_create(:address => gip)}
-      
-      if host.hosttype.hypervisor? and content['children']
-        host.children = Yabitz::Model::Host.get(content['children'])
-      elsif host.hosttype.virtualmachine? and content['parent']
-        host.parent = Yabitz::Model::Host.get(content['parent'])
-      end
-
-      tags = Yabitz::Model::TagChain.new
-      tags.tagchain = content['tagchain'] || []
-      tags.save
-
-      unless host.rackunit.rack
-        host.rackunit.rack_set
-        host.rackunit.save
-      end
-
-      host.tagchain = tags
-      host.save
-
-      Yabitz::Plugin.get(:handler_hook).each do |plugin|
-        if plugin.respond_to?(:host_insert)
-          plugin.host_insert(host)
-        end
-      end
-    end
-    "ok"
-  end
-
   post '/ybz/host/create' do
     admin_protected!
     params = request.params
@@ -413,14 +361,13 @@ class Yabitz::Application < Sinatra::Base
 
         if host.hwid and host.hwid.length > 0 and not hosttype.virtualmachine?
           bricks = Yabitz::Model::Brick.query(:hwid => host.hwid)
-          if bricks.size == 1 and host.rackunit
+          if bricks.size == 1
             brick = bricks.first
             unless bricks.first.status == Yabitz::Model::Brick::STATUS_STOCK
               raise Yabitz::InconsistentDataError, "指定されたhwid #{host.hwid} に対応する機器に「#{Yabitz::Model::Brick.status_title(Yabitz::Model::Brick::STATUS_STOCK)}」以外のものがあります"
             end
             brick.served!
-            # brick.status = Yabitz::Model::Brick::STATUS_IN_USE
-            brick.heap = host.rackunit.rackunit
+            brick.heap = host.rackunit.rackunit if host.rackunit
             brick.save
           end
         end
@@ -633,107 +580,6 @@ class Yabitz::Application < Sinatra::Base
       end
     end
     
-    "ok"
-  end
-
-  # with request body as JSON
-  put %r!/ybz/host/(\d+)! do |oid|
-    admin_protected!
-
-    json = JSON.load(request.body)
-    halt HTTP_STATUS_NOT_ACCEPTABLE, "mismatch oid between request #{json['oid']} and URI #{oid}" unless oid.to_i == json['oid'].to_i
-
-    Stratum.transaction do |conn|
-      host = Yabitz::Model::Host.get(oid.to_i)
-      halt HTTP_STATUS_CONFLICT unless host.id == json['id'].to_i
-
-      # for update hook
-      pre_host_status = Yabitz::Model::Host.get(oid.to_i, :ignore_cache => true)
-      pre_children_status = Yabitz::Model::Host.get(pre_host_status.children_by_id, :ignore_cache => true)
-
-      content = json['content']
-
-      host.service = Yabitz::Model::Service.get(content['service'].to_i) unless equal_in_fact(host.service_by_id, content['service'])
-
-      host.status = content['status'] unless equal_in_fact(host.status, content['status'])
-      host.type = Yabitz::HostType.new(content['type']).name unless equal_in_fact(host.type, content['type'])
-      unless equal_in_fact(host.rackunit, content['rackunit'])
-        host.rackunit = (content['rackunit'].nil? or content['rackunit'].empty?) ? nil : Yabitz::Model::RackUnit.query_or_create(:rackunit => content['rackunit'])
-        if host.hosttype.hypervisor?
-          host.children.each do |c|
-            c.rackunit = host.rackunit
-          end
-        end
-      end
-      unless equal_in_fact(host.hwid, content['hwid'])
-        host.hwid = content['hwid']
-        if host.hosttype.hypervisor?
-          host.children.each do |c|
-            c.hwid = content['hwid']
-          end
-        end
-      end
-
-      unless equal_in_fact(host.hwinfo, content['hwinfo'])
-        host.hwinfo = (content['hwinfo'].nil? or content['hwinfo'].empty?) ? nil : Yabitz::Model::HwInformation.query_or_create(:name => content['hwinfo'])
-      end
-      host.memory = content['memory'] unless equal_in_fact(host.memory, content['memory'])
-      host.disk = content['disk'] unless equal_in_fact(host.disk, content['disk'])
-      unless equal_in_fact(host.os, content['os'])
-        host.os = (content['os'].nil? or content['os'].empty?) ? nil : Yabitz::Model::OSInformation.query_or_create(:name => content['os']).name
-      end
-      unless equal_in_fact(host.dnsnames, content['dnsnames'])
-        if content['dnsnames']
-          host.dnsnames = content['dnsnames'].map{|dns| Yabitz::Model::DNSName.query_or_create(:dnsname => dns)}
-        else
-          host.dnsnames = []
-        end
-      end
-      unless equal_in_fact(host.localips, content['localips'])
-        if content['localips']
-          host.localips = content['localips'].map{|lip| Yabitz::Model::IPAddress.query_or_create(:address => lip)}
-        else
-          host.localips = []
-        end
-      end
-      unless equal_in_fact(host.globalips, content['globalips'])
-        if content['globalips']
-          host.globalips = content['globalips'].map{|lip| Yabitz::Model::IPAddress.query_or_create(:address => lip)}
-        else
-          host.globalips = []
-        end
-      end
-      unless equal_in_fact(host.virtualips, content['virtualips'])
-        if content['virtualips']
-          host.virtualips = content['virtualips'].map{|lip| Yabitz::Model::IPAddress.query_or_create(:address => lip)}
-        else
-          host.virtualips = []
-        end
-      end
-      tags = content['tagchain'].is_a?(Array) ? content['tagchain'] : (content['tagchain'] && content['tagchain'].split(/\s+/))
-      unless equal_in_fact(host.tagchain.tagchain, tags)
-        host.tagchain.tagchain = tags
-        host.tagchain.save
-      end
-      host.notes = content['notes'] unless equal_in_fact(host.notes, content['notes'])
-
-      if not host.saved?
-        host.save
-        host.children.each do |child|
-          child.save unless child.saved?
-        end
-      end
-
-      Yabitz::Plugin.get(:handler_hook).each do |plugin|
-        if plugin.respond_to?(:host_update)
-          plugin.host_update(pre_host_status, host)
-          [pre_children_status, host.children].transpose.each do |pre, post|
-            plugin.host_update(pre, post)
-          end
-        end
-      end
-    end
-
     "ok"
   end
 

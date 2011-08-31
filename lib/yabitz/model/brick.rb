@@ -58,7 +58,9 @@ module Yabitz
         if self.status == STATUS_STOCK
           self.status = STATUS_IN_USE
         end
-        self.served = Time.now.strftime('%Y-%m-%d')
+        if not self.served or self.served.length < 1
+          self.served = Time.now.strftime('%Y-%m-%d')
+        end
       end
 
       def self.normalize_delivered(str)
