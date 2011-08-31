@@ -52,7 +52,9 @@
     * Ruby 1.9.2 (1.9.1以前および1.8系では動作しません)
         * sinatra, haml/sass, ruby-ldap, ruby-mysql, rspec
         * Stratum (see https://github.com/tagomoris/Stratum )
-    * MySQL 5.1.x (5.0や5.5でも動作はすると思いますが、未確認です)
+    * MySQL 5.1.x
+        * 5.0でも動作はすると思いますが、未確認です
+        * 5.5ではおそらく動作しません (ruby-mysqlのバグ？ そのうち mysql2 に移行予定)
     * 適当な Linux もしくは Mac OS X (Windowsでは動作しません)
 * クライアント環境
     * モダンなブラウザ (Chrome, Safari, Firefox ...)
@@ -71,7 +73,7 @@
 適当なLinuxサーバで以下のものをインストールします。
 
 * Ruby 1.9.2
-* MySQL 5.1.x (or 5.5 ?)
+* MySQL 5.1.x
 
 MySQLにおける認証設定は適宜行ってください。
 
@@ -168,7 +170,7 @@ yabitz の動作設定を config プラグインとして作成します。と�
 
 * 添付の instant_membersource プラグインを使用する
     * lib/yabitz/plugin/instant_membersource.rb
-        * ただしデフォルトで無効になっているため、ファイルの def self.plugin_priority の中身を 1 に修正してください
+        * def self.plugin_priority の数値が 1 もしくはそれ以上になっていることを確認してください
     * プラグイン内で指定するデータベースに認証情報マスタとなるテーブルを作成し、参照します
     * 全ユーザ情報をあらかじめこのテーブルに登録する必要があります
         * いちおう登録・編集用のコマンドラインインターフェイスを提供するスクリプトを同梱してありますが、機能は貧弱です
