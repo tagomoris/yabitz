@@ -6,7 +6,7 @@ module Yabitz::Plugin
       :auth
     end
     def self.plugin_priority
-      100
+      1
     end
 
 

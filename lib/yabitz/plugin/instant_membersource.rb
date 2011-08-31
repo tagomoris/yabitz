@@ -9,7 +9,7 @@ module Yabitz::Plugin
       [:auth, :member]
     end
     def self.plugin_priority
-      1
+      2
     end
 
     DB_HOSTNAME = "localhost"
@@ -19,13 +19,17 @@ module Yabitz::Plugin
     TABLE_NAME = "list"
     def self.query(sql, *args)
       result = []
-      conn = Mysql.connect(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DATABASE_NAME)
-      conn.charset = 'utf8'
-      st = conn.prepare(sql)
-      st.execute(*args)
-      st.each{|r| result.push(r.map{|v| v.respond_to?(:encode) ? v.encode('utf-8') : v})}
-      st.free_result
-      result
+      begin
+        conn = Mysql.connect(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DATABASE_NAME)
+        conn.charset = 'utf8'
+        st = conn.prepare(sql)
+        st.execute(*args)
+        st.each{|r| result.push(r.map{|v| v.respond_to?(:encode) ? v.encode('utf-8') : v})}
+        st.free_result
+        result
+      rescue Mysql::BadDbError
+        []
+      end
     end
 
     def self.authenticate(username, password, sourceip=nil)
