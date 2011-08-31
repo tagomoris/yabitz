@@ -22,6 +22,13 @@
                   %input.simple{:type => "text", :name => "to", :size => 15, :value => @to_param}
                 - else
                   %input.simple{:type => "text", :name => "to", :size => 15}
+            %tr
+              %td{:colspan => 2, :style => "padding-top: .5em; padding-bottom: .5em;"}
+                範囲終点の時点で機器を使用しているホストのサービス(コンテンツコード)で集計
+                %br
+                初めてのホスト登録時に機器は自動的に使用開始日がセットされます
+                %br
+                使用開始日は最初以外は自動では更新されません
         %div{:style => "padding-right: 3em; text-align: right;"}
           %button.mainform_commit
             %div{:style => "padding: 0.5em 3em 0.5em 3em;"} リストを表示
