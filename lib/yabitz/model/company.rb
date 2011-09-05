@@ -60,6 +60,10 @@ module Yabitz
         self.name + ' (' + c + ')'
       end
 
+      def has_code?
+        not (self.code.nil? or self.code == '' or self.code == 'NONE')
+      end
+
       def charging_title
         self.class.charging_title(self.charging)
       end

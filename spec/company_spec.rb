@@ -100,6 +100,18 @@ describe Yabitz::Model::Content do
     @t.code.should eql('54')
   end
   
+  it "において has_code? は code が nil や空文字、'NONE' 以外の場合に true を返すこと" do
+    @t.code = nil
+    @t.has_code?.should be_false
+    @t.code = ''
+    @t.has_code?.should be_false
+    @t.code = 'NONE'
+    @t.has_code?.should be_false
+
+    @t.code = '256'
+    @t.has_code?.should be_true
+  end
+
   it "に #dept を id もしくはオブジェクトで正常にセットできること" do
     lambda {@t.dept_by_id = nil}.should raise_exception(Stratum::FieldValidationError)
     lambda {@t.dept = nil}.should raise_exception(Stratum::FieldValidationError)
