@@ -43,6 +43,7 @@ $(function(){
     $('.opetag_item.selectable').click(function(e){toggle_item_selection(e, 'host/operation', true);});
     $('.contactmember_item.selectable').click(function(e){toggle_item_selection(e, 'contactmember');});
     $('.brick_item.selectable').click(function(e){toggle_item_selection(e, 'brick');});
+    $('.brick_item.unselectable').click(function(e){show_detailbox_without_selection(e, 'brick');});
 
     // events for mainview toggle
     $('.show_mainview').click(function(event){
@@ -125,7 +126,10 @@ function regist_event_listener(target){
         target.click(function(e){toggle_item_selection(e, 'contactmember');});
     }
     if (target.hasClass('brick_item')) {
-        target.click(function(e){toggle_item_selection(e, 'brick');});
+        if (target.hasClass('selectable'))
+            target.click(function(e){toggle_item_selection(e, 'brick');});
+        else if (target.hasClass('unselectable'))
+            target.click(function(e){show_detailbox_without_selection(e, 'brick');});
     }
     if (target.hasClass('authinfo_item')) {
         target.click(function(e){toggle_item_selection(e, 'auth_info');});
@@ -475,6 +479,13 @@ function select_off_selectable(target){
     }
     target.removeClass('selected_item').find(':checkbox').attr('checked', false);
     remove_from_selections(oid);
+};
+
+function show_detailbox_without_selection(event, modelname){
+    var target = $(event.target).closest('.selectable,.unselectable');
+    var oid = target.attr("id"); // in case of ipaddr, "id" has ipaddress string, instead of oid
+    if (oid == null || oid == "") {return false; }
+    show_detailbox(modelname, oid, event.pageY - detailbox_offset(), false);
 };
 
 function toggle_item_selection(event, modelname, single){
