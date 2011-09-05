@@ -27,8 +27,8 @@ module Yabitz
       field :delivered, :string, :validator => 'check_delivered', :normalizer => 'normalize_delivered'
       fieldex :delivered, "例: 2011-07-05"
       field :status, :string, :selector => STATUS_LIST, :default => STATUS_STOCK
-      field :served, :string, :validator => 'check_delivered', :normalizer => 'normalize_delivered'
-      fieldex :delivered, "例: 2011-08-23"
+      field :served, :string, :validator => 'check_served', :normalizer => 'normalize_delivered', :empty => :ok
+      fieldex :served, "例: 2011-08-23"
       field :serial, :string, :length => 1024, :empty => :ok
       field :heap, :string, :length => 128, :empty => :ok
       field :notes, :string, :length => 4096, :empty => :ok
@@ -70,6 +70,14 @@ module Yabitz
           return sprintf('%04d', $1.to_i) + '-' + sprintf('%02d', $2.to_i) + '-' + sprintf('%02d', $3.to_i)
         end
         tred
+      end
+
+      def check_served(str)
+        if not str or str.length < 1
+          true
+        else
+          check_delivered(str)
+        end
       end
 
       def check_delivered(str)
