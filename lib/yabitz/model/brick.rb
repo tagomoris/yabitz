@@ -55,9 +55,6 @@ module Yabitz
       end
 
       def served!
-        if self.status == STATUS_STOCK
-          self.status = STATUS_IN_USE
-        end
         if not self.served or self.served.length < 1
           self.served = Time.now.strftime('%Y-%m-%d')
         end

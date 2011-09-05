@@ -361,13 +361,16 @@ class Yabitz::Application < Sinatra::Base
 
         if host.hwid and host.hwid.length > 0 and not hosttype.virtualmachine?
           bricks = Yabitz::Model::Brick.query(:hwid => host.hwid)
+          unless bricks.first.status == Yabitz::Model::Brick::STATUS_STOCK
+            raise Yabitz::InconsistentDataError, "指定されたhwid #{host.hwid} に対応する機器に「#{Yabitz::Model::Brick.status_title(Yabitz::Model::Brick::STATUS_STOCK)}」以外のものがあります"
+          end
           if bricks.size == 1
             brick = bricks.first
-            unless bricks.first.status == Yabitz::Model::Brick::STATUS_STOCK
-              raise Yabitz::InconsistentDataError, "指定されたhwid #{host.hwid} に対応する機器に「#{Yabitz::Model::Brick.status_title(Yabitz::Model::Brick::STATUS_STOCK)}」以外のものがあります"
-            end
-            brick.served!
+            brick.status = Yabitz::Model::Brick::STATUS_IN_USE
             brick.heap = host.rackunit.rackunit if host.rackunit
+            if service.content and service.content.code and service.content.code.length > 0 and service.content.code != 'NONE'
+              brick.served!
+            end
             brick.save
           end
         end
@@ -708,6 +711,20 @@ EOT
           end
           host.status = new_status
 
+          # if content.code is valid and status is in_service, then brick will be served.
+          if host.hwid and host.hwid.length > 0 and not host.hosttype.virtualmachine? and
+              new_status == Yabitz::Model::Host::STATUS_IN_SERVICE and host.service and host.service.content and
+              host.service.content.code and host.service.content.code.length > 0 and host.service.content.code != 'NONE'
+            bricks = Yabitz::Model::Brick.query(:hwid => host.hwid)
+            if bricks.size == 1
+              brick = bricks.first
+              if brick.status == Yabitz::Model::Brick::STATUS_IN_USE
+                brick.served!
+                brick.save
+              end
+            end
+          end
+
           if new_status == Yabitz::Model::Host::STATUS_REMOVED
             host.localips = []
             host.globalips = []
@@ -773,6 +790,21 @@ EOT
           end
 
           host.service = service
+
+          # if content.code is valid and status is in_service, then brick will be served.
+          if host.hwid and host.hwid.length > 0 and not host.hosttype.virtualmachine? and
+              host.status == Yabitz::Model::Host::STATUS_IN_SERVICE and service and service.content and
+              service.content.code and service.content.code.length > 0 and service.content.code != 'NONE'
+            bricks = Yabitz::Model::Brick.query(:hwid => host.hwid)
+            if bricks.size == 1
+              brick = bricks.first
+              if brick.status == Yabitz::Model::Brick::STATUS_IN_USE
+                brick.served!
+                brick.save
+              end
+            end
+          end
+
           host.tagchain.tagchain += [tag]
           host.tagchain.save
           host.save
