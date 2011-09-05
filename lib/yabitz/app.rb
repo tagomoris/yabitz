@@ -211,8 +211,8 @@ class Yabitz::Application < Sinatra::Base
 
     pre_hosts_hash = Hash[*(Yabitz::Model::Host.get(oids, :before => @first_timestamp, :force_all => true).map{|h| [h.oid, h]}.flatten)]
     post_hosts_hash = Hash[*(Yabitz::Model::Host.get(oids, :before => @last_timestamp, :force_all => true).map{|h| [h.oid, h]}.flatten)]
-    pre_hosts = oids.map{|oid| pre_hosts_hash[oid]}
-    post_hosts = oids.map{|oid| post_hosts_hash[oid]}
+    pre_hosts = oids.map{|i| pre_hosts_hash[i]}
+    post_hosts = oids.map{|i| post_hosts_hash[i]}
 
     @host_record_pairs = [post_hosts, pre_hosts].transpose.select{|a,b| (not a and b) or (a and not b) or (a and b and a.id != b.id)}
     @hide_selectionbox = true
@@ -639,7 +639,7 @@ class Yabitz::Application < Sinatra::Base
       unless equal_in_fact(host.os, content['os'])
         host.os = if content['os'].nil? or content['os'].empty?
                     nil
-                  then
+                  else
                     Yabitz::Model::OSInformation.query_or_create(:name => content['os']).name
                   end
       end
@@ -1087,7 +1087,7 @@ EOT
       response['Content-Type'] = 'application/json'
       @ipsegments.to_json
     else
-      @ips = Yabitz::Model::IPAddress.choose(:hosts, :holder, :lowlevel => true){|hosts,holder| not (hosts.nil? or hosts.empty?) or holder == Stratum::Model::BOOL_TRUE}
+      @ips = Yabitz::Model::IPAddress.choose(:hosts, :holder, :lowlevel => true){|hosts,holder| (not hosts.nil? and not hosts.empty?) or holder == Stratum::Model::BOOL_TRUE}
       @segment_network_map = {}
       @segment_used_ip_map = {}
       @ipsegments.each do |seg|
@@ -1118,7 +1118,7 @@ EOT
       response['Content-Type'] = 'application/json'
       @ipsegments.to_json
     else
-      @ips = Yabitz::Model::IPAddress.choose(:hosts, :holder, :lowlevel => true){|hosts,holder| not (hosts.nil? or hosts.empty?) or holder == Stratum::Model::BOOL_TRUE}
+      @ips = Yabitz::Model::IPAddress.choose(:hosts, :holder, :lowlevel => true){|hosts,holder| (not hosts.nil? and not hosts.empty?) or holder == Stratum::Model::BOOL_TRUE}
       @segment_network_map = {}
       @segment_used_ip_map = {}
       @ipsegments.each do |seg|
@@ -1151,7 +1151,7 @@ EOT
     when '.tr.ajax'
       network = IPAddr.new(@ipseg.address + '/' + @ipseg.netmask)
       @ips = Yabitz::Model::IPAddress.choose(:hosts, :holder, :address, :lowlevel => true){|hosts,holder,address|
-        (not (hosts.nil? or hosts.empty?) or holder == Stratum::Model::BOOL_TRUE) and network.include?(IPAddr.new(address))
+        ((not hosts.nil? and not hosts.empty?) or holder == Stratum::Model::BOOL_TRUE) and network.include?(IPAddr.new(address))
       }
       @segment_used_ip_map = {@ipseg.to_s => @ips}
       haml :ipsegment, :layout => false, :locals => {:ipsegment => @ipseg}
