@@ -586,6 +586,116 @@ class Yabitz::Application < Sinatra::Base
     "ok"
   end
 
+  # JSON PUT API は生データを直接書き換えるイメージなので、連動して他のステータスが変わるようなフックは実行しない
+  # ということにする
+  put %r!/ybz/host/(\d+)! do |oid|
+    admin_protected!
+    json = JSON.load(request.body)
+    halt HTTP_STATUS_NOT_ACCEPTABLE, "mismatch oid between request #{json['oid']} and URI #{oid}" unless oid.to_i == json['oid'].to_i
+
+    Stratum.transaction do |conn|
+      host = Yabitz::Model::Host.get(oid.to_i)
+      halt HTTP_STATUS_CONFLICT unless host.id == json['id'].to_i
+
+      # for update hook
+      pre_host_status = Yabitz::Model::Host.get(oid.to_i, :ignore_cache => true)
+      pre_children_status = Yabitz::Model::Host.get(pre_host_status.children_by_id, :ignore_cache => true)
+
+      content = json['content']
+
+      host.service = Yabitz::Model::Service.get(content['service'].to_i) unless equal_in_fact(host.service_by_id, content['service'])
+      host.status = content['status'] unless equal_in_fact(host.status, content['status'])
+      host.type = Yabitz::HostType.new(content['type']).name unless equal_in_fact(host.type, content['type'])
+      unless equal_in_fact(host.rackunit, content['rackunit'])
+        host.rackunit = if content['rackunit'].nil? or content['rackunit'].empty?
+                          nil
+                        else
+                          Yabitz::Model::RackUnit.query_or_create(:rackunit => content['rackunit'])
+                        end
+        if host.hosttype.hypervisor?
+          host.children.each do |c|
+            c.rackunit = host.rackunit
+          end
+        end
+      end
+      unless equal_in_fact(host.hwid, content['hwid'])
+        host.hwid = content['hwid']
+        if host.hosttype.hypervisor?
+          host.children.each do |c|
+            c.hwid = content['hwid']
+          end
+        end
+      end
+
+      unless equal_in_fact(host.hwinfo, content['hwinfo'])
+        host.hwinfo = if content['hwinfo'].nil? or content['hwinfo'].empty?
+                        nil
+                      else
+                        Yabitz::Model::HwInformation.query_or_create(:name => content['hwinfo'])
+                      end
+      end
+      host.memory = content['memory'] unless equal_in_fact(host.memory, content['memory'])
+      host.disk = content['disk'] unless equal_in_fact(host.disk, content['disk'])
+      unless equal_in_fact(host.os, content['os'])
+        host.os = if content['os'].nil? or content['os'].empty?
+                    nil
+                  then
+                    Yabitz::Model::OSInformation.query_or_create(:name => content['os']).name
+                  end
+      end
+      unless equal_in_fact(host.dnsnames, content['dnsnames'])
+        if content['dnsnames']
+          host.dnsnames = content['dnsnames'].map{|dns| Yabitz::Model::DNSName.query_or_create(:dnsname => dns)}
+        else
+          host.dnsnames = []
+        end
+      end
+      unless equal_in_fact(host.localips, content['localips'])
+        if content['localips']
+          host.localips = content['localips'].map{|lip| Yabitz::Model::IPAddress.query_or_create(:address => lip)}
+        else
+          host.localips = []
+        end
+      end
+      unless equal_in_fact(host.globalips, content['globalips'])
+        if content['globalips']
+          host.globalips = content['globalips'].map{|lip| Yabitz::Model::IPAddress.query_or_create(:address => lip)}
+        else
+          host.globalips = []
+        end
+      end
+      unless equal_in_fact(host.virtualips, content['virtualips'])
+        if content['virtualips']
+          host.virtualips = content['virtualips'].map{|lip| Yabitz::Model::IPAddress.query_or_create(:address => lip)}
+        else
+          host.virtualips = []
+        end
+      end
+      tags = content['tagchain'].is_a?(Array) ? content['tagchain'] : (content['tagchain'] && content['tagchain'].split(/\s+/))
+      unless equal_in_fact(host.tagchain.tagchain, tags)
+        host.tagchain.tagchain = tags
+        host.tagchain.save
+      end
+      host.notes = content['notes'] unless equal_in_fact(host.notes, content['notes'])
+      if not host.saved?
+        host.save
+        host.children.each do |child|
+          child.save unless child.saved?
+        end
+      end
+
+      Yabitz::Plugin.get(:handler_hook).each do |plugin|
+        if plugin.respond_to?(:host_update)
+          plugin.host_update(pre_host_status, host)
+          [pre_children_status, host.children].transpose.each do |pre, post|
+            plugin.host_update(pre, post)
+          end
+        end
+      end
+    end
+    "ok"
+  end
+
   # 複数ホスト一括変更 (status_* / change_service / add_tag / tie_hypervisor / change_dns / delete_records)
   post '/ybz/host/alter-prepare/:ope/:oidlist' do
     admin_protected!
