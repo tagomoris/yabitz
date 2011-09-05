@@ -138,6 +138,7 @@ module Yabitz::Checker
 
     bricks_hwid = {}
     bricks_serial = {}
+    bricks_in_use_without_served = []
 
     bricks.each do |brick|
       # for check: 2 or more bricks has same hwid
@@ -174,6 +175,16 @@ module Yabitz::Checker
           bricks_status_heap_mismatches.push(brick)
         end
       end
+
+      # check: bricks in IN_USE and related host has valid content code, but not have served
+      if brick.status == Yabitz::Model::Brick::STATUS_IN_USE and brick.hwid
+        next unless hwid_hosts[brick.hwid] and hwid_hosts[brick.hwid].length == 1
+        host = hwid_hosts[brick.hwid].first
+        next unless host.service and host.service.content and host.service.content.has_code?
+        if brick.served.nil? or brick.served.empty?
+          bricks_in_use_without_served.push(brick)
+        end
+      end
     end
 
     # check: 2 or more bricks has same hwid
@@ -199,6 +210,7 @@ module Yabitz::Checker
       :bricks_without_hwid_serial => bricks_without_hwid_serial,
       :bricks_status_hwid_host_mismatches => bricks_status_hwid_host_mismatches,
       :bricks_status_heap_mismatches => bricks_status_heap_mismatches,
+      :bricks_in_use_without_served => bricks_in_use_without_served,
     }
   end
 

@@ -305,3 +305,20 @@
         %img{:src => "/images/1x1.gif"}
       %td.td_line_term
         %img{:src => "/images/1x1.gif"}
+%table.maintable
+  %tr.checker_item_head
+    %th{:style => 'border-left: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+    %th{:colspan => 2} 使用中機器でコンテンツコードもあるが利用開始日が未登録
+    %th{:style => 'border-right: 1px solid;'}
+      %img{:src => "/images/1x1.gif"}
+  - @result[:bricks_in_use_without_served].each do |b|
+    %tr.checker_item
+      %td.td_line_head
+        %img{:src => "/images/1x1.gif"}
+      %td.checker_target
+        %a{:href => "/ybz/brick/#{b.oid}"}&= b.to_s
+      %td.checker_info
+        %img{:src => "/images/1x1.gif"}
+      %td.td_line_term
+        %img{:src => "/images/1x1.gif"}
