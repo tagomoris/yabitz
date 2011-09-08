@@ -20,6 +20,7 @@ $(function(){
     $('button#hosts_history').click(function(e){show_hosts_history(e);});
     $('button#hosts_diff').click(function(e){show_hosts_diff(e);});
     $('button#opetaglist').click(function(e){show_operations(e);});
+    $('button#bricks_of_hosts').click(function(e){show_bricks_of_hosts(e);});
 
     $('button#selected_bricks').click(function(e){show_selected_bricks(e);});
     $('button#bricks_history').click(function(e){show_bricks_history(e);});
@@ -228,6 +229,15 @@ function show_selected_hosts(event){
         return false;
     };
     window.location.href = '/ybz/host/' + selected.get().join('-');
+};
+
+function show_bricks_of_hosts(event){
+    var selected = $(selected_objects());
+    if (selected.size() < 1) {
+        show_error_dialog("対象がなにも選択されていません");
+        return false;
+    };
+    window.location.href = '/ybz/brick/list/hosts/' + selected.get().join('-');
 };
 
 function show_selected_bricks(event){

@@ -2545,6 +2545,33 @@ EOT
     end
   end
 
+  get %r!/ybz/brick/list/hosts/([-0-9]+)(\.json|\.csv)?! do |host_oidlist, ctype|
+    authorized?
+    hosts = Yabitz::Model::Host.get(host_oidlist.split('-').map(&:to_i))
+    pass if hosts.empty? # object not found -> HTTP 404
+
+    hwidlist = []
+    hosts.each do |h|
+      if h.hwid and h.hwid.length > 1
+        hwidlist.push(h.hwid)
+      end
+    end
+    @bricks = Yabitz::Model::Brick.choose(:hwid){|hwid| hwidlist.delete(hwid)}
+    case ctype
+    when '.json'
+      response['Content-Type'] = 'application/json'
+      @bricks.to_json
+    when '.csv'
+      response['Content-Type'] = 'text/csv'
+      Yabitz::Model::Brick.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, @bricks)
+    else
+      @bricks.sort!
+      @page_title = "機器一覧 (選択ホストから)"
+      @default_selected_all = true
+      haml :bricks, :locals => {:cond => "選択ホストから"}
+    end
+  end
+
   get %r!/ybz/bricks/list/(stock|in_use|spare|repair|broken)(\.json|\.csv)?! do |statuslabel, ctype|
     authorized?
     targetstatus = case statuslabel
