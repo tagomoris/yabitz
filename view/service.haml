@@ -14,8 +14,11 @@
       %td.charging_normal
         %div{:style => "padding-top: 3em;"}
     %td.service_name
-      %a{:href => "/ybz/hosts/service/#{service.oid}"}
-        &= service.name
+      %a{:href => "/ybz/service/#{service.oid}"}&= service.name
+    %td.td_padding
+      %img{:src => "/images/1x1.gif"}
+    %td.service_name
+      %a{:href => "/ybz/hosts/service/#{service.oid}"} (hosts)
     %td.td_padding
       %img{:src => "/images/1x1.gif"}
     %td.service_content&= service.content.name
@@ -34,8 +37,11 @@
       %td.charging_normal
         %div{:style => "padding-top: 3em;"}
     %td.service_name
-      %a{:href => "/ybz/hosts/service/#{service.oid}"}
-        &= service.name
+      %a{:href => "/ybz/service/#{service.oid}"}&= service.name
+    %td.td_padding
+      %img{:src => "/images/1x1.gif"}
+    %td.service_name
+      %a{:href => "/ybz/hosts/service/#{service.oid}"} (hosts)
     %td.td_padding
       %img{:src => "/images/1x1.gif"}
     %td.service_content&= service.content.name

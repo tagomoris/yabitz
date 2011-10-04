@@ -1,8 +1,9 @@
 -# coding: utf-8
+- @service_single ||= false
 
 %div#toolbox_spacer_top
 %div#toolbox
-  %div 表示： サービス一覧
+  %div&= "表示：" + @page_title
   - if @isadmin
     %div
       選択したサービスへの操作: 
@@ -16,7 +17,7 @@
         %option{:value => 'delete_records'} 選択したサービスのデータを消去
 %div#toolbox_spacer_bottom
 %div#maincontents
-  - if @isadmin
+  - if @isadmin and not @service_single
     %form.inline.smartadd{:name => 'create_service', :action => '/ybz/service/create', :method => "POST"}
       %table#servicecreate
         %tr.service_item

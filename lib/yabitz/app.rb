@@ -1960,9 +1960,11 @@ EOT
     when '.ajax' then haml :service_parts, :layout => false
     when '.tr.ajax' then haml :service, :layout => false, :locals => {:service => @srv}
     else
-      @hide_detailbox = true
       @page_title = "サービス: #{@srv.name}"
-      haml :service_page, :locals => {:cond => @page_title}
+      @service_single = true
+      @services = [@srv]
+      Stratum.preload(@services, Yabitz::Model::Service)
+      haml :services
     end
   end
 
