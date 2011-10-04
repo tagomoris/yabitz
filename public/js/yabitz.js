@@ -32,6 +32,7 @@ $(function(){
     // events for main table items
     $('.host_outline.selectable').click(function(e){toggle_item_selection(e, 'host');});
     $('.service_item.selectable').click(function(e){toggle_item_selection(e, 'service', true);});
+    $('.service_item.unselectable').click(function(e){show_detailbox_without_selection(e, 'service');});
     $('.content_item.selectable').click(function(e){toggle_item_selection(e, 'content', true);});
     $('.dept_item.selectable').click(function(e){toggle_item_selection(e, 'dept', true);});
     $('.rack_item.selectable').click(function(e){toggle_item_selection(e, 'rack', true);});
@@ -106,7 +107,10 @@ function regist_event_listener(target){
         target.click(function(e){toggle_item_selection(e, 'host');});
     }
     if (target.hasClass('service_item')) {
-        target.click(function(e){toggle_item_selection(e, 'service', true);});
+        if (target.hasClass('selectable'))
+            target.click(function(e){toggle_item_selection(e, 'service');});
+        else if (target.hasClass('unselectable'))
+            target.click(function(e){show_detailbox_without_selection(e, 'service');});
     }
     if (target.hasClass('content_item')) {
         target.click(function(e){toggle_item_selection(e, 'content', true);});
