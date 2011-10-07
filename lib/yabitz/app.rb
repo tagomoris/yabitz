@@ -448,7 +448,6 @@ class Yabitz::Application < Sinatra::Base
 
     Stratum.transaction do |conn|
       hv_list = []
-      hook_insert_host_list = []
 
       params.keys.select{|k| k =~ /\Aadding\d+\Z/}.each do |key|
         i = params[key].to_i.to_s
