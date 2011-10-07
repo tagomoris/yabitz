@@ -434,6 +434,80 @@ class Yabitz::Application < Sinatra::Base
     "opetag:" + opetag
   end
 
+  # JSON PUT API は生データを投入するイメージ
+  # brick連動はなし
+  put '/ybz/host/create' do
+    admin_protected!
+    json = JSON.load(request.body)
+
+    service = Yabitz::Model::Service.query(:name => json['service'], :unique => true);
+    raise Yabitz::InconsistentDataError, "所属サービスが指定されていません" unless service
+    unless json['status'] and Yabitz::Model::Host::STATUS_LIST.include?(json['status'])
+      raise Yabitz::InconsistentDataError, "作成後の状態が指定されていません"
+    end
+
+    Stratum.transaction do |conn|
+      hv_list = []
+      hook_insert_host_list = []
+
+      params.keys.select{|k| k =~ /\Aadding\d+\Z/}.each do |key|
+        i = params[key].to_i.to_s
+
+        # host-creation only validation (insufficiant case with Yabitz::Model::Host validators)
+        hosttype = Yabitz::HostType.new(json["type"])
+        if hosttype.host?
+          raise Yabitz::InconsistentDataError, "ホスト作成時には必ずメモリ容量を入力してください" if not json["memory"] or json["memory"].empty?
+          raise Yabitz::InconsistentDataError, "ホスト作成時には必ずHDD容量を入力してください" if not json["disk"] or json["disk"].empty?
+        end
+
+        host = Yabitz::Model::Host.new
+        host.service = service
+        host.status = json['status']
+        host.type = hosttype.name
+        host.rackunit = (json["rackunit"].nil? or json["rackunit"].empty?) ? nil : Yabitz::Model::RackUnit.query_or_create(:rackunit => json["rackunit"])
+        host.hwid = json["hwid"]
+        host.hwinfo = (json["hwinfo"].nil? or json['hwinfo'].empty?) ? nil : Yabitz::Model::HwInformation.query(:name => json["hwinfo"], :unique => true)
+        host.memory = json["memory"]
+        host.disk = json["disk"]
+        host.os = json['os']
+        host.dnsnames = json["dnsnames"].map{|dns| Yabitz::Model::DNSName.query_or_create(:dnsname => dns)}
+        host.localips = json["localips"].map{|lip| Yabitz::Model::IPAddress.query_or_create(:address => lip)}
+        host.globalips = json["globalips"].map{|gip| Yabitz::Model::IPAddress.query_or_create(:address => gip)}
+        host.virtualips = json["virtualips"].map{|gip| Yabitz::Model::IPAddress.query_or_create(:address => gip)}
+
+        # host.parent / host.children
+        if host.hosttype.virtualmachine? and host.rackunit and host.hwid and not host.hwid.empty?
+          hv_oids = Yabitz::Model::Host.query(
+                                              :rackunit => host.rackunit, :hwid => host.hwid,
+                                              :type => host.hosttype.hypervisor.name, :oidonly => true)
+          raise Yabitz::InconsistentDataError, "ラック位置とHWIDが同一のハイパーバイザが2台以上存在します" if hv_oids.size > 1
+          raise Yabitz::InconsistentDataError, "ゲスト指定されていますがラック位置とHWIDの一致するハイパーバイザがありません" if hv_oids.size < 1
+
+          unless hv_list.map(&:oid).include?(hv_oids.first)
+            hv_list.push(Yabitz::Model::Host.get(hv_oids.first))
+          end
+          hv = hv_list.select{|h| h.oid == hv_oids.first}.first
+
+          if hv.saved?
+            hv.prepare_to_update()
+          end
+          host.parent = hv
+          unless hv.dnsnames.map(&:dnsname).include?('p.' + host.dnsnames.first.dnsname)
+            hv.dnsnames += [Yabitz::Model::DNSName.query_or_create(:dnsname => 'p.' + host.dnsnames.first.dnsname)]
+          end
+        end
+
+        host.save
+      end
+
+      hv_list.each do |hv|
+        hv.save
+      end
+    end
+    'ok'
+  end
+
+
   # ホスト変更履歴
   get '/ybz/host/history/:oidlist' do |oidlist|
     authorized?
