@@ -134,7 +134,7 @@ module Yabitz
       def self.find_by_fullname_and_badge_list(pairs)
         result = []
         Yabitz::Plugin.get(:member).each do |member_source|
-          result += member_source.find_by_fullname_and_badge_list(pairs)
+          result += member_source.find_by_fullname_and_badge_list(pairs).compact
         end
         result
       end
