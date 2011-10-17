@@ -46,21 +46,21 @@ module Yabitz::Plugin
       cond = (['fullname=?'] * fullnames.size).join(' OR ')
       results = self.query("SELECT #{MEMBERLIST_FIELDS.map(&:to_s).join(',')} FROM #{TABLE_NAME} WHERE #{cond}", *fullnames)
 
-      fullnames.map{|fn| results.select{|ary| ary.first == fn}.first}
+      fullnames.map{|fn| results.select{|ary| ary.first == fn}.first}.compact
     end
 
     def self.find_by_badge_list(badges)
       cond = (['badge=?'] * badges.size).join(' OR ')
       results = self.query("SELECT #{MEMBERLIST_FIELDS.map(&:to_s).join(',')} FROM #{TABLE_NAME} WHERE #{cond}", *badges)
 
-      badges.map{|bd| results.select{|ary| ary[1] == bd}.first}
+      badges.map{|bd| results.select{|ary| ary[1] == bd}.first}.compact
     end
 
     def self.find_by_fullname_and_badge_list(pairs)
       cond = (['(fullname=? AND badge=?)'] * pairs.size).join(' OR ')
       results = self.query("SELECT #{MEMBERLIST_FIELDS.map(&:to_s).join(',')} FROM #{TABLE_NAME} WHERE #{cond}", *(pairs.flatten))
 
-      pairs.map{|fn,bd| results.select{|ary| ary[0] == fn and ary[1] == bd}.first}
+      pairs.map{|fn,bd| results.select{|ary| ary[0] == fn and ary[1] == bd}.first}.compact
     end
 
     def self.convert(values)
