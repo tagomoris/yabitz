@@ -270,24 +270,3 @@ module Yabitz
     end
   end
 end
-
-
-      field :service, :ref, :model => 'Yabitz::Model::Service', :serialize => :oid
-      field :status, :string, :selector => STATUS_LIST
-      field :type, :string, :selector => Yabitz::HostType.names
-      field :parent, :ref, :model => 'Yabitz::Model::Host', :empty => :ok, :manualmaint => true, :serialize => :full
-      field :children, :reflist, :model => 'Yabitz::Model::Host', :empty => :ok, :serialize => :meta
-      field :rackunit, :ref, :model => 'Yabitz::Model::RackUnit', :empty => :ok
-      field :hwid, :string, :length => 16, :empty => :ok
-      field :hwinfo, :ref, :model => 'Yabitz::Model::HwInformation', :empty => :ok
-      field :memory, :string, :validator => 'check_memory', :normalizer => 'normalize_memory', :empty => :ok
-      fieldex :memory, "例: 8g, 32GB , 5GiB , 1.5TB"
-      field :disk, :string, :validator => 'check_disk', :normalizer => 'normalize_disk', :empty => :ok
-      fieldex :disk, "例: 500GB, HDD 2TB, SSD 400GB*2, SAS 137GBx8 RAID-5"
-      field :os, :string, :length => 64, :empty => :ok
-      field :dnsnames, :reflist, :model => 'Yabitz::Model::DNSName', :empty => :ok
-      field :localips, :reflist, :model => 'Yabitz::Model::IPAddress', :column => 'local_ipaddrs', :empty => :ok
-      field :globalips, :reflist, :model => 'Yabitz::Model::IPAddress', :column => 'global_ipaddrs', :empty => :ok
-      field :virtualips, :reflist, :model => 'Yabitz::Model::IPAddress', :column => 'virtual_ipaddrs', :empty => :ok
-      field :notes, :string, :length => 4096, :empty => :ok
-      field :tagchain, :ref, :model => 'Yabitz::Model::TagChain', :empty => :ok
