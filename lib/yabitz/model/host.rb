@@ -246,8 +246,7 @@ module Yabitz
         require 'csv'
         CSV.generate do |csv|
           csv << CSVFIELDS_LL.map(&:upcase)
-          #hosts.each do |h|
-          while h = hosts.shift
+          hosts.each do |h|
             csv << [h.oid.to_s,
                     h.rackunit.to_s,
                     h.localips.map(&:to_s).join(' '),
