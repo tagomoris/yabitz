@@ -298,7 +298,8 @@ class Yabitz::Application < Sinatra::Base
       @hosts.to_json
     when '.csv'
       response['Content-Type'] = 'text/csv'
-      Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, @hosts)
+      # Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, @hosts)
+      Yabitz::Model::Host.build_raw_csv_burst_llfields(@hosts)
     else
       pass
     end

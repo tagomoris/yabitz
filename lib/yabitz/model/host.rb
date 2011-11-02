@@ -241,6 +241,53 @@ module Yabitz
         end
         ret_lines.join
       end
+
+      def self.build_raw_csv_burst_llfields(hosts)
+        #  CSVFIELDS_LL = [:oid, :rackunit, :localips, :globalips, :virtualips, :service,
+        #                  :dnsnames, :type, :hwinfo, :memory, :disk, :os, :hwid, :status]
+        require 'csv'
+        ret_lines = [CSVFIELDS_LL.to_csv]
+        hosts.each do |h|
+          ret_lines.push([
+                          h.oid.to_s,
+                          h.rackunit.to_s,
+                          h.localips.map(&:to_s).join(' '),
+                          h.globalips.map(&:to_s).join(' '),
+                          h.virtualips.map(&:to_s).join(' '),
+                          h.service.to_s,
+                          h.dnsnames.map(&:to_s).join(' '),
+                          h.type,
+                          h.hwinfo.to_s,
+                          h.memory,
+                          h.disk,
+                          h.os,
+                          h.hwid,
+                          h.status
+                         ].to_csv)
+        end
+        ret_lines.join
+      end
     end
   end
 end
+
+
+      field :service, :ref, :model => 'Yabitz::Model::Service', :serialize => :oid
+      field :status, :string, :selector => STATUS_LIST
+      field :type, :string, :selector => Yabitz::HostType.names
+      field :parent, :ref, :model => 'Yabitz::Model::Host', :empty => :ok, :manualmaint => true, :serialize => :full
+      field :children, :reflist, :model => 'Yabitz::Model::Host', :empty => :ok, :serialize => :meta
+      field :rackunit, :ref, :model => 'Yabitz::Model::RackUnit', :empty => :ok
+      field :hwid, :string, :length => 16, :empty => :ok
+      field :hwinfo, :ref, :model => 'Yabitz::Model::HwInformation', :empty => :ok
+      field :memory, :string, :validator => 'check_memory', :normalizer => 'normalize_memory', :empty => :ok
+      fieldex :memory, "例: 8g, 32GB , 5GiB , 1.5TB"
+      field :disk, :string, :validator => 'check_disk', :normalizer => 'normalize_disk', :empty => :ok
+      fieldex :disk, "例: 500GB, HDD 2TB, SSD 400GB*2, SAS 137GBx8 RAID-5"
+      field :os, :string, :length => 64, :empty => :ok
+      field :dnsnames, :reflist, :model => 'Yabitz::Model::DNSName', :empty => :ok
+      field :localips, :reflist, :model => 'Yabitz::Model::IPAddress', :column => 'local_ipaddrs', :empty => :ok
+      field :globalips, :reflist, :model => 'Yabitz::Model::IPAddress', :column => 'global_ipaddrs', :empty => :ok
+      field :virtualips, :reflist, :model => 'Yabitz::Model::IPAddress', :column => 'virtual_ipaddrs', :empty => :ok
+      field :notes, :string, :length => 4096, :empty => :ok
+      field :tagchain, :ref, :model => 'Yabitz::Model::TagChain', :empty => :ok
