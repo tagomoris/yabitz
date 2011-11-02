@@ -292,12 +292,15 @@ class Yabitz::Application < Sinatra::Base
     authorized?
     @hosts = Yabitz::Model::Host.all
     Stratum.preload(@hosts, Yabitz::Model::Host)
+    loaded = Date.now
     case ctype
     when '.json'
       response['Content-Type'] = 'application/json'
       @hosts.to_json
     when '.csv'
       response['Content-Type'] = 'text/csv'
+      response['X-DATA-LOADED'] = loaded.to_s
+      response['X-DATA-RESPONSE'] = Date.now.to_s
       # Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, @hosts)
       Yabitz::Model::Host.build_raw_csv_burst_llfields(@hosts)
     else

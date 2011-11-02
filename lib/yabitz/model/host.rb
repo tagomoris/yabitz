@@ -243,8 +243,6 @@ module Yabitz
       end
 
       def self.build_raw_csv_burst_llfields(hosts)
-        #  CSVFIELDS_LL = [:oid, :rackunit, :localips, :globalips, :virtualips, :service,
-        #                  :dnsnames, :type, :hwinfo, :memory, :disk, :os, :hwid, :status]
         require 'csv'
         CSV.generate do |csv|
           csv << CSVFIELDS_LL.map(&:upcase)
@@ -265,26 +263,6 @@ module Yabitz
                     h.status]
           end
         end
-        # ret_lines = [CSVFIELDS_LL.to_csv]
-        # hosts.each do |h|
-        #   ret_lines.push([
-        #                   h.oid.to_s,
-        #                   h.rackunit.to_s,
-        #                   h.localips.map(&:to_s).join(' '),
-        #                   h.globalips.map(&:to_s).join(' '),
-        #                   h.virtualips.map(&:to_s).join(' '),
-        #                   h.service.to_s,
-        #                   h.dnsnames.map(&:to_s).join(' '),
-        #                   h.type,
-        #                   h.hwinfo.to_s,
-        #                   h.memory.to_s,
-        #                   h.disk.to_s,
-        #                   h.os.to_s,
-        #                   h.hwid,
-        #                   h.status
-        #                  ].to_csv)
-        # end
-        # ret_lines.join
       end
     end
   end
