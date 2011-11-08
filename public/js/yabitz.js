@@ -629,7 +629,9 @@ function replace_detailbox(ypos, toggled, callback){
 };
 
 function clone_cloneable_item(event){
-    var sibling_last = $('div.cloneable,div.cloneableline').eq($('div.cloneable,div.cloneableline').size() - 1);
+    var cloneable_box = $(event.target).closest('div.cloneablebox');
+    var count = cloneable_box.find('div.cloneable,div.cloneableline').size();
+    var sibling_last = cloneable_box.find('div.cloneable,div.cloneableline').eq(count - 1);
     var cloned_from = $(event.target).closest('div.cloneable,div.cloneableline');
     var cloned_from_id = cloned_from.find('input.cloneable_number').val();
     var cloned_to = cloned_from.clone(true);

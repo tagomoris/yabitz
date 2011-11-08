@@ -21,7 +21,7 @@
         %label{:for => "andor_and"} AND検索
         %input{:id => "andor_or", :type => "radio", :name => "andor", :value => 'OR', :style => 'font-size: 13px;', :checked => (andor == 'OR')}
         %label{:for => "andor_or"} OR検索
-      %div.cloneableline
+      %div.cloneablebox
         - if conditions.size < 1
           %div.search_item.cloneableline
             %input.cloneable_number{:type => "hidden", :name => "cond0", :value => 0}
@@ -67,9 +67,62 @@
                   %td{:style => "width: 10%;"}
                     %div.listclone{:style => "text-align: right;"}
                       %img.button{:src => "/images/adding.png"}
-        %div{:style => "padding-right: 3em; text-align: right;"}
-          %button.mainform_commit
-            %div{:style => "padding: 0.5em 3em 0.5em 3em;"} 検索
+      %h4 検索除外対象
+      %div
+        除外対象選択
+        %input{:id => "ex_andor_and", :type => "radio", :name => "ex_andor", :value => 'AND', :style => 'font-size: 13px;', :checked => (ex_andor == 'AND')}
+        %label{:for => "ex_andor_and"} AND検索
+        %input{:id => "ex_andor_or", :type => "radio", :name => "ex_andor", :value => 'OR', :style => 'font-size: 13px;', :checked => (ex_andor == 'OR')}
+        %label{:for => "ex_andor_or"} OR検索
+      %div.cloneablebox
+        - if ex_conditions.size < 1
+          %div.search_item.cloneableline
+            %input.cloneable_number{:type => "hidden", :name => "ex_cond0", :value => 0}
+            %table.inputitems
+              %tr
+                %td.namefield{:style => "text-align: left; width: 45%;"}
+                  %select{:name => "ex_field0"}
+                    %option{:value => 'not_selected', :selected => true} 除外条件対象フィールドの選択
+                    %option{:value => 'dnsname'} dns名
+                    %option{:value => 'ipaddress'} IPアドレス
+                    %option{:value => 'service'} サービス名
+                    %option{:value => 'rackunit'} ラック位置
+                    %option{:value => 'hwid'} ハードウェアID
+                    %option{:value => 'hwinfo'} ハードウェア種類名
+                    %option{:value => 'os'} OS
+                    %option{:value => 'tag'} タグ(一致のみ)
+                %td.inputfield{:style => "text-align: left; width: 45%;"}
+                  %input.simple.blank_onclone{:type => "text", :name => "ex_value0", :size => 30}
+                %td{:style => "width: 10%;"}
+                  %div.listclone{:style => "text-align: right;"}
+                    %img.button{:src => "/images/adding.png"}
+        - else
+          - cnum = -1
+          - ex_conditions.each do |cfield, cvalue|
+            - cnum += 1
+            %div.search_item.cloneableline
+              %input.cloneable_number{:type => "hidden", :name => "ex_cond#{cnum}", :value => h(cnum)}
+              %table.inputitems
+                %tr
+                  %td.namefield{:style => "text-align: left; width: 45%;"}
+                    %select{:name => "ex_field#{cnum}"}
+                      %option{:value => 'not_selected', :selected => (cfield == 'not_selected')} 検索対象フィールドの選択
+                      %option{:value => 'dnsname', :selected => (cfield == 'dnsname')} dns名
+                      %option{:value => 'ipaddress', :selected => (cfield == 'ipaddress')} IPアドレス
+                      %option{:value => 'service', :selected => (cfield == 'service')} サービス名
+                      %option{:value => 'rackunit', :selected => (cfield == 'rackunit')} ラック位置
+                      %option{:value => 'hwid', :selected => (cfield == 'hwid')} ハードウェアID
+                      %option{:value => 'hwinfo', :selected => (cfield == 'hwinfo')} ハードウェア種類名
+                      %option{:value => 'os', :selected => (cfield == 'os')} OS
+                      %option{:value => 'tag', :selected => (cfield == 'tag')} タグ(一致のみ)
+                  %td.inputfield{:style => "text-align: left; width: 45%;"}
+                    %input.simple.blank_onclone{:type => "text", :name => "ex_value#{cnum}", :size => 30, :value => h(cvalue)}
+                  %td{:style => "width: 10%;"}
+                    %div.listclone{:style => "text-align: right;"}
+                      %img.button{:src => "/images/adding.png"}
+      %div{:style => "padding-right: 3em; text-align: right;"}
+        %button.mainform_commit
+          %div{:style => "padding: 0.5em 3em 0.5em 3em;"} 検索
 %div#toolbox_spacer_bottom
 %div#maincontents
   %table#hostlist

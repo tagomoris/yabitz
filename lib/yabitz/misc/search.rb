@@ -32,7 +32,7 @@ module Yabitz
       end
     end
 
-    def self.search(andor, conditions)
+    def self.search(andor, conditions, ex_andor, ex_conditions)
       oidset = []
       conditions.each do |field, pattern|
         each_set = self.search_part(field, pattern)
@@ -48,6 +48,22 @@ module Yabitz
           end
         end
       end
+      ex_oidset = []
+      ex_conditions.each do |field, pattern|
+        each_set = self.search_part(field, pattern)
+        if ex_oidset.size == 0
+          ex_oidset.push(*each_set)
+        else
+          if ex_andor == 'AND'
+            ex_oidset = ex_oidset & each_set
+          elsif ex_andor == 'OR'
+            ex_oidset = ex_oidset | each_set
+          else
+            raise ArgumentError, "invalid and/or specification: #{ex_andor}"
+          end
+        end
+      end
+      oidset = oidset - ex_oidset
       Yabitz::Model::Host.get(oidset)
     end
   end

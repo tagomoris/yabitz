@@ -146,16 +146,24 @@ class Yabitz::Application < Sinatra::Base
     
     @page_title = "ホスト検索"
     @hosts = nil
-    andor = 'OR'
+    andor = 'AND'
     conditions = []
+    ex_andor = 'AND'
+    ex_conditions = []
     if request.params['andor']
-      andor = (request.params['andor'] == 'AND' ? 'AND' : 'OR')
+      andor = (request.params['andor'] == 'OR' ? 'OR' : 'AND')
       request.params.keys.map{|k| k =~ /\Acond(\d+)\Z/; $1 ? $1.to_i : nil}.compact.sort.each do |i|
         next if request.params["value#{i}"].nil? or request.params["value#{i}"].empty?
-        search_value = request.params["value#{i}"].strip.gsub(/^　+/,'').gsub(/　+$/,'')
+        search_value = request.params["value#{i}"].strip
         conditions.push([request.params["field#{i}"], search_value])
       end
-      @hosts = Yabitz::DetailSearch.search(andor, conditions)
+      ex_andor = (request.params['ex_andor'] == 'OR' ? 'OR' : 'AND')
+      request.params.keys.map{|k| k =~ /\Aex_cond(\d+)\Z/; $1 ? $1.to_i : nil}.compact.sort.each do |i|
+        next if request.params["ex_value#{i}"].nil? or request.params["ex_value#{i}"].empty?
+        ex_search_value = request.params["ex_value#{i}"].strip
+        ex_conditions.push([request.params["ex_field#{i}"], ex_search_value])
+      end
+      @hosts = Yabitz::DetailSearch.search(andor, conditions, ex_andor, ex_conditions)
     end
 
     Stratum.preload(@hosts, Yabitz::Model::Host) if @hosts;
@@ -168,7 +176,7 @@ class Yabitz::Application < Sinatra::Base
       Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, @hosts)
     else
       @copypastable = true
-      haml :detailsearch, :locals => {:andor => andor, :conditions => conditions}
+      haml :detailsearch, :locals => {:andor => andor, :conditions => conditions, :ex_andor => ex_andor, :ex_conditions => ex_conditions}
     end
   end
 
@@ -304,9 +312,10 @@ class Yabitz::Application < Sinatra::Base
       response['X-DATA-STARTED'] = started.to_s
       response['X-DATA_PRELOAD'] = preloading.to_s
       response['X-DATA-LOADED'] = loaded.to_s
-      response['X-DATA-RESPONSE'] = Time.now.to_s
       # Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, @hosts)
-      Yabitz::Model::Host.build_raw_csv_burst_llfields(@hosts)
+      str = Yabitz::Model::Host.build_raw_csv_burst_llfields(@hosts)
+      response['X-DATA-RESPONSE'] = Time.now.to_s
+      str
     else
       pass
     end
