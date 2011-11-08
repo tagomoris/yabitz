@@ -11,6 +11,9 @@
     %button#hosts_history 選択ホストの変更履歴
   - if @isadmin
     = haml :host_operations
+  %div
+    検索結果ダウンロード:
+    %a{:href => csv_url} [CSV]
   %div{:style => "padding: 0.5em;"}
     %img{:src => "/images/1x1.gif"}
   %h3 検索条件

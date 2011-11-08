@@ -175,8 +175,18 @@ class Yabitz::Application < Sinatra::Base
       response['Content-Type'] = 'text/csv'
       Yabitz::Model::Host.build_raw_csv(Yabitz::Model::Host::CSVFIELDS_LL, @hosts)
     else
+      counter = 0
+      keyvalues = []
+      conditions.each{|f,v| keyvalues.push("cond#{counter}=#{counter}&field#{counter}=#{f}&value#{counter}=#{v}"); counter += 1}
+      counter = 0
+      ex_conditions.each{|f,v| keyvalues.push("ex_cond#{counter}=#{counter}&ex_field#{counter}=#{f}&ex_value#{counter}=#{v}"); counter += 1}
+      csv_url = '/ybz/search.csv?andor=' + andor + '&ex_andor=' + ex_andor + '&' + keyvalues.join('&')
       @copypastable = true
-      haml :detailsearch, :locals => {:andor => andor, :conditions => conditions, :ex_andor => ex_andor, :ex_conditions => ex_conditions}
+      haml :detailsearch, :locals => {
+        :andor => andor, :conditions => conditions,
+        :ex_andor => ex_andor, :ex_conditions => ex_conditions,
+        :csv_url => csv_url
+      }
     end
   end
 
