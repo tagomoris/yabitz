@@ -33,7 +33,7 @@ module Yabitz
       field :heap, :string, :length => 128, :empty => :ok
       field :notes, :string, :length => 4096, :empty => :ok
 
-      CSVFIELDS = [:oid, :hwid, :productname, :delivered, :status, :served, :serial]
+      CSVFIELDS = [:oid, :hwid, :productname, :delivered, :status, :served, :serial, :heap]
 
       def self.instanciate_mapping(fieldname)
         case fieldname
