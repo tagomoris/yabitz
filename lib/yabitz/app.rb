@@ -388,11 +388,7 @@ class Yabitz::Application < Sinatra::Base
 
         if host.hwid and host.hwid.length > 0 and not hosttype.virtualmachine?
           bricks = Yabitz::Model::Brick.query(:hwid => host.hwid)
-<<<<<<< HEAD
           unless bricks.first.nil? or bricks.first.status == Yabitz::Model::Brick::STATUS_STOCK
-=======
-          unless bricks.first and bricks.first.status == Yabitz::Model::Brick::STATUS_STOCK
->>>>>>> 54cda111df5e92237b94e75964f8b7042160a69a
             raise Yabitz::InconsistentDataError, "指定されたhwid #{host.hwid} に対応する機器が「#{Yabitz::Model::Brick.status_title(Yabitz::Model::Brick::STATUS_STOCK)}」以外の状態です"
           end
           if bricks.size == 1
