@@ -20,7 +20,7 @@
   - if @rack_blank_scores
     %td.rack_state&= '空き:' + @rack_blank_scores[rack.oid].first.to_s + 'U, ' + '使用中:' + @rack_blank_scores[rack.oid].last.to_s + 'U'
   - else
-    %td.td_padding_narrow
+    %td.rack_state
       %img{:src => "/images/1x1.gif"}
   %td.td_padding
     %img{:src => "/images/1x1.gif"}

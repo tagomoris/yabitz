@@ -1587,7 +1587,7 @@ EOT
       response['Content-Type'] = 'application/json'
       @rack.to_json
     when '.tr.ajax'
-      rackunits = Yabitz::Model::RackUnit.query(:rack => @rack)
+      rackunits = Yabitz::Model::RackUnit.query(:rack => @rack).select{|ru| ru.hosts.select{|h| h.isnt(:removing, :removed)}.size > 0}
       @units_in_racks = {@rack.oid => rackunits.size}
       @rack_blank_scores = {@rack.oid => Yabitz::RackTypes.search(@rack.label).rackunit_status_list(@rack.label, rackunits)}
       haml :rack, :layout => false, :locals => {:rack => @rack}
