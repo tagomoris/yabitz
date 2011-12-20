@@ -49,7 +49,7 @@ class Yabitz::Application < Sinatra::Base
   # end
 
   configure do
-    set :public, File.dirname(__FILE__) + '/../../public'
+    set :public_folder, File.dirname(__FILE__) + '/../../public'
     set :views, File.dirname(__FILE__) + '/../../view'
     set :haml, {:format => :html5}
 
