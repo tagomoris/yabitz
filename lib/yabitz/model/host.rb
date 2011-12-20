@@ -117,6 +117,14 @@ module Yabitz
         customcomp(self, other, 'oid')
       end
 
+      def is(*list)
+        list.map{|sym| sym.to_s.upcase}.include?(self.status)
+      end
+
+      def isnt(*list)
+        not list.map{|sym| sym.to_s.upcase}.include?(self.status)
+      end
+
       def display_name
         if self.dnsnames_by_id and self.dnsnames_by_id.size > 0
           return self.dnsnames[0].dnsname

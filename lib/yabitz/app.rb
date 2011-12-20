@@ -1536,7 +1536,9 @@ EOT
       @rack_blank_scores = nil
 
       @rackunits = Yabitz::Model::RackUnit.all
+      Stratum.preload(@rackunits, Yabitz::Model::RackUnit)
       @rackunits.each do |ru|
+        next if ru.hosts.select{|h| h.isnt(:removed, :removing)}.size < 1
         @units_in_racks[ru.rack_by_id] ||= 0
         @units_in_racks[ru.rack_by_id] += 1
       end
@@ -1559,6 +1561,7 @@ EOT
     Stratum.preload(@rackunits, Yabitz::Model::RackUnit)
     hwinfos = Yabitz::Model::HwInformation.all
     @rackunits.each do |ru|
+      next if ru.hosts.select{|h| h.isnt(:removed, :removing)}.size < 1
       rackunits_per_rack[ru.rack_by_id] ||= []
       rackunits_per_rack[ru.rack_by_id].push(ru)
       @units_in_racks[ru.rack_by_id] ||= 0

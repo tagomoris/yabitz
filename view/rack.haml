@@ -14,7 +14,7 @@
   %td.rack_desc&= rack.datacenter + '/' + rack.type
   %td.td_padding_narrow
     %img{:src => "/images/1x1.gif"}
-  %td.rack_units&= @units_in_racks[rack.oid].to_s + 'units'
+  %td.rack_units&= (@units_in_racks[rack.oid] || 0).to_s + 'units'
   %td.td_padding_narrow
     %img{:src => "/images/1x1.gif"}
   - if @rack_blank_scores
