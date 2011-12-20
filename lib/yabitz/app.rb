@@ -594,7 +594,7 @@ class Yabitz::Application < Sinatra::Base
 
     case ctype
     when '.ajax'
-      @hosts = Yabitz::Model::Host.get(Yabitz::Model::TagChain.query(:tagchain => @opetag).map(&:host_by_id))
+      @hosts = Yabitz::Model::Host.get(Yabitz::Model::TagChain.query(:tagchain => @opetag).map(&:host_by_id), :force_all => true)
       haml :opetag_parts, :layout => false
     else
       tags = Yabitz::Model::TagChain.query(:tagchain => @opetag, :select => :first)
