@@ -603,8 +603,9 @@ class Yabitz::Application < Sinatra::Base
         records = Yabitz::Model::Host.retrospect(tag.host_by_id)
         next if records.size < 1
         
-        after = records.select{|h| (tag.inserted_at - 1) <= h.inserted_at and h.inserted_at <= (tag.inserted_at + 1)}.first
-        before = records.select{|h| h.inserted_at < (tag.inserted_at - 1)}.first
+        # '15' is magic number, but maybe operations (with opetag) is once in 30 seconds
+        after = records.select{|h| (tag.inserted_at - 15) <= h.inserted_at and h.inserted_at <= (tag.inserted_at + 15)}.first
+        before = records.select{|h| h.inserted_at < (tag.inserted_at - 15)}.first
 
         @host_record_pairs.push([after, before])
       end
