@@ -56,6 +56,9 @@
           %td.brick_delivered&= @served_records[service].size.to_s + '台'
           %td.td_padding
             %img{:src => "/images/1x1.gif"}
+          %td.brick_delivered 納品日
+          %td.td_padding
+            %img{:src => "/images/1x1.gif"}
           %td.brick_delivered 利用開始日
           %td.td_line_term
             %img{:src => "/images/1x1.gif"}
@@ -78,6 +81,9 @@
           %td.brick_delivered&= service_unknowns.size.to_s + '台'
           %td.td_padding
             %img{:src => "/images/1x1.gif"}
+          %td.brick_delivered 納品日
+          %td.td_padding
+            %img{:src => "/images/1x1.gif"}
           %td.brick_delivered 利用開始日
           %td.td_line_term
             %img{:src => "/images/1x1.gif"}
@@ -92,7 +98,7 @@
         %td.brick_hwid{:colspan => 3} 合計
         %td.td_padding
           %img{:src => "/images/1x1.gif"}
-        %td.brick_delivered{:colspan => 5}&= total_bricks.to_s + '台'
+        %td.brick_delivered{:colspan => 7}&= total_bricks.to_s + '台'
         %td.td_line_term
           %img{:src => "/images/1x1.gif"}
       - codes.keys.sort.each do |code|
@@ -103,7 +109,7 @@
             %td.brick_hwid{:colspan => 3} コード #{h(code)}
             %td.td_padding
               %img{:src => "/images/1x1.gif"}
-            %td.brick_delivered{:colspan => 3}&= product
+            %td.brick_delivered{:colspan => 5}&= product
             %td.td_padding
               %img{:src => "/images/1x1.gif"}
             %td.brick_delivered&= codes[code][product]
