@@ -61,7 +61,7 @@ module Yabitz
 
       def self.instanciate_mapping(fieldname)
         case fieldname
-        when :status, :type, :hwid, :memory, :disk, :notes
+        when :status, :type, :hwid, :cpu, :memory, :disk, :notes
           {:method => :new, :class => String}
         when :service
           {:method => :get, :class => Yabitz::Model::Service}

@@ -28,6 +28,8 @@
   %td.td_base_narrow
     &= (host.os.nil? or host.os.empty?) ? "-" : host.os
     %br
+    &= (host.cpu.nil? or host.cpu.empty?) ? "-" : host.cpu
+    %br
     &= (host.memory.nil? or host.memory.empty?) ? "-" : host.memory
     %br
     &= (host.disk.nil? or host.disk.empty?) ? "-" : host.disk

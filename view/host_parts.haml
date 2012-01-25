@@ -43,6 +43,7 @@
   = field_editable 'host', @host, :text, :rackunit, "ラック位置", @host.rackunit.to_s, "未割当", :link => (@host.rackunit ? "/ybz/rackunit/#{@host.rackunit.oid}" : nil)
   = field_editable 'host', @host, :text, :hwid, "HWID", @host.hwid, "未割当", :link => "/ybz/smartsearch?keywords=" + h(@host.hwid)
   = field_editable 'host', @host, :selector, :hwinfo, "ハードウェア情報", (@host.hwinfo ? @host.hwinfo.oid.to_s : ""), "未指定", :display_value => @host.hwinfo.to_s, :opt_class => Yabitz::Model::HwInformation, :opt_value => :oid, :opt_label => :name
+  = field_editable 'host', @host, :text, :cpu, "CPU", @host.cpu, "未記入"
   = field_editable 'host', @host, :text, :memory, "メモリ", @host.memory, "未記入"
   = field_editable 'host', @host, :text, :disk, "ディスク", @host.disk, "未記入"
   = field_editable 'host', @host, :combobox, :os, "OS", @host.os, "未指定", :opt_class => Yabitz::Model::OSInformation, :opt_value => :name

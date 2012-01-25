@@ -378,6 +378,7 @@ class Yabitz::Application < Sinatra::Base
         host.rackunit = params["rackunit#{i}"].strip.empty? ? nil : Yabitz::Model::RackUnit.query_or_create(:rackunit => params["rackunit#{i}"].strip)
         host.hwid = params["hwid#{i}"].strip
         host.hwinfo = params["hwinfo#{i}"].strip.empty? ? nil : Yabitz::Model::HwInformation.get(params["hwinfo#{i}"].to_i)
+        host.cpu = params["cpu#{i}"].strip
         host.memory = params["memory#{i}"].strip
         host.disk = params["disk#{i}"].strip
         host.os = params["os#{i}"].strip.empty? ? "" : Yabitz::Model::OSInformation.get(params["os#{i}"].to_i).name

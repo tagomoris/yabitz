@@ -159,6 +159,21 @@
       %strong&= to.hwinfo ? to.hwinfo.name : ""
     %td.td_line_term
       %img{:src => "/images/1x1.gif"}
+- if from.cpu != to.cpu
+  %tr.host_outline
+    %td.td_line_head{:style => "text-align: center;"}
+      CPU
+    %td.td_padding
+      %img{:src => "/images/1x1.gif"}
+    %td.td_base{:style => "text-align: right;"}
+      &= from.cpu
+      %img{:src => "/images/1x1.gif"}
+    %td.td_padding_narrow{:style => "padding-left: 1em; padding-right: 1em;"}
+      %img{:src => "/images/1x1.gif"}
+    %td.td_base.strengthed{:style => "text-align: left;"}
+      %strong&= to.cpu
+    %td.td_line_term
+      %img{:src => "/images/1x1.gif"}
 - if from.memory != to.memory
   %tr.host_outline
     %td.td_line_head{:style => "text-align: center;"}
