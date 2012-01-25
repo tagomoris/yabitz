@@ -108,21 +108,17 @@ describe Yabitz::Model::Brick do
     [th, ti, td, ta, tb, tf, tg, tc, te].sort.map(&:serial).should eql(['ta', 'tb', 'tc', 'td', 'te', 'tf', 'tg', 'th', 'ti'])
   end
 
-  it "を served! したとき、STATUSがSTOCKのものに限りIN_USEになり、また served に yyyy-mm-dd 形式で現在の日付が入ること" do
-    @t.status.should eql(Yabitz::Model::Brick::STATUS_STOCK)
+  it "を served! したとき served に yyyy-mm-dd 形式で現在の日付が入ること" do
     d = Time.now.strftime('%Y-%m-%d')
     d.should match(/^20\d\d-\d\d-\d\d$/)
     @t.served!
     @t.served.should eql(d)
-    @t.status.should eql(Yabitz::Model::Brick::STATUS_IN_USE)
   end
 
   it "を served! したとき、既に served に値があるものは変わらないこと" do
-    @t.status.should eql(Yabitz::Model::Brick::STATUS_STOCK)
     @t.served = '2011-07-01'
     @t.served!
     @t.served.should eql('2011-07-01')
-    @t.status.should eql(Yabitz::Model::Brick::STATUS_IN_USE)
   end
 
   it "の .build_raw_csv が正常に内部データのCSV表現を返すこと" do
@@ -131,9 +127,9 @@ describe Yabitz::Model::Brick do
     t3 = @cls.query_or_create(:status => Yabitz::Model::Brick::STATUS_IN_USE, :hwid => 'Y99', :productname => 'MacBookAir, early 2011', :delivered => '2011/07/01', :served => '2012-02-29', :serial => '00002 ZZZZ 0X')
 
     # CSVFIELDS = [:oid, :hwid, :productname, :delivered, :status, :served, :serial]
-    header = "OID,HWID,PRODUCTNAME,DELIVERED,STATUS,SERVED,SERIAL\n"
-    @cls.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, [t1]).should eql(header + t1.oid.to_s + ',X1111,RX100,2011-07-01,STOCK,"",00001-XXX1-F1' + "\n")
-    @cls.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, [t2]).should eql(header + t2.oid.to_s + ',X1112,"RX100 ""xxx""",2011-07-01,IN_USE,2011-08-11,00001-XXX1-F1' + "\n")
-    @cls.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, [t3]).should eql(header + t3.oid.to_s + ',Y99,"MacBookAir, early 2011",2011-07-01,IN_USE,2012-02-29,00002 ZZZZ 0X' + "\n")
+    header = "OID,HWID,PRODUCTNAME,DELIVERED,STATUS,SERVED,SERIAL,HEAP\n"
+    @cls.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, [t1]).should eql(header + t1.oid.to_s + ',X1111,RX100,2011-07-01,STOCK,"",00001-XXX1-F1,""' + "\n")
+    @cls.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, [t2]).should eql(header + t2.oid.to_s + ',X1112,"RX100 ""xxx""",2011-07-01,IN_USE,2011-08-11,00001-XXX1-F1,""' + "\n")
+    @cls.build_raw_csv(Yabitz::Model::Brick::CSVFIELDS, [t3]).should eql(header + t3.oid.to_s + ',Y99,"MacBookAir, early 2011",2011-07-01,IN_USE,2012-02-29,00002 ZZZZ 0X,""' + "\n")
   end
 end
