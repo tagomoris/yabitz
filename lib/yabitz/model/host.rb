@@ -32,6 +32,8 @@ module Yabitz
       field :rackunit, :ref, :model => 'Yabitz::Model::RackUnit', :empty => :ok
       field :hwid, :string, :length => 16, :empty => :ok
       field :hwinfo, :ref, :model => 'Yabitz::Model::HwInformation', :empty => :ok
+      field :cpu, :string, :validator => 'check_cpu', :normalizer => 'normalize_cpu', :empty => :ok
+      fieldex :cpu, "CPU数[SPACE]モデル名等 / 例: '4 Intel Xeon L5630 @ 2.13GHz'"
       field :memory, :string, :validator => 'check_memory', :normalizer => 'normalize_memory', :empty => :ok
       fieldex :memory, "例: 8g, 32GB , 5GiB , 1.5TB"
       field :disk, :string, :validator => 'check_disk', :normalizer => 'normalize_disk', :empty => :ok
@@ -147,6 +149,15 @@ module Yabitz
 
       def hosttype
         Yabitz::HostType.new(self.type)
+      end
+
+      def self.normalize_cpu(str)
+        return nil if str.nil?
+        str.tr('ａ-ｚＡ-Ｚ０-９　．', 'a-zA-Z0-9 .')
+      end
+
+      def check_cpu(str)
+        str =~ /\A\d+( .*)?\Z/ and str.length < 65
       end
 
       def self.normalize_memory(str)

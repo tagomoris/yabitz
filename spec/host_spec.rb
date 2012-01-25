@@ -38,9 +38,10 @@ describe Yabitz::Model::Host do
     t2.hwid = 'MS315'
     (@t <=> t2).should eql(-1)
 
-    @t.rackunit = Yabitz::Model::RackUnit.query_or_create(:rackunit => '1a-a02-a1')
+      /\A[a-zA-Z][0-9]{2}-(0[1-9]|[1-3][0-9]|4[012])[fr]?\Z/
+    @t.rackunit = Yabitz::Model::RackUnit.query_or_create(:rackunit => 'a01-12')
     (@t <=> t2).should eql(-1)
-    t2.rackunit = Yabitz::Model::RackUnit.query_or_create(:rackunit => '1a-a01-a1')
+    t2.rackunit = Yabitz::Model::RackUnit.query_or_create(:rackunit => 'a01-10')
     (@t <=> t2).should eql(1)
     @t.rackunit = nil
     t2.rackunit = nil
@@ -146,6 +147,26 @@ describe Yabitz::Model::Host do
     lambda {@t.hwid = 'あ'*16}.should_not raise_exception(Stratum::FieldValidationError)
     @t.hwid = 'X23579'
     @t.hwid.should eql('X23579')
+  end
+
+  it "に #cpu が正常に入出力可能なこと、またvalidatorのチェックを通っていること" do
+    lambda {@t.cpu = ''}.should_not raise_exception(Stratum::FieldValidationError)
+    lambda {@t.cpu = nil}.should_not raise_exception(Stratum::FieldValidationError)
+
+    lambda {@t.cpu = '4'}.should_not raise_exception(Stratum::FieldValidationError)
+    @t.cpu.should eql('4')
+    lambda {@t.cpu = '16'}.should_not raise_exception(Stratum::FieldValidationError)
+    @t.cpu.should eql('16')
+    lambda {@t.cpu = '4 Intel Xeon'}.should_not raise_exception(Stratum::FieldValidationError)
+    @t.cpu.should eql('4 Intel Xeon')
+    lambda {@t.cpu = '2 2.4GHz'}.should_not raise_exception(Stratum::FieldValidationError)
+    
+    lambda {@t.cpu = '４'}.should_not raise_exception(Stratum::FieldValidationError)
+    @t.cpu.should eql('4')
+    lambda {@t.cpu = '１６'}.should_not raise_exception(Stratum::FieldValidationError)
+    lambda {@t.cpu = '４　Ｉｎｔｅｌ　Ｘｅｏｎ'}.should_not raise_exception(Stratum::FieldValidationError)
+    @t.cpu.should eql('4 Intel Xeon')
+    lambda {@t.cpu = '２ ２．４ＧＨｚ'}.should_not raise_exception(Stratum::FieldValidationError)
   end
 
   it "に #memory が正常に入出力可能なこと、またvalidatorのチェックを通っていること" do
@@ -296,13 +317,13 @@ describe Yabitz::Model::Host do
   
   it "の #rackunit に対して RackUnit のセットおよび取り出しが正常に行えること" do
     ra = Yabitz::Model::Rack.new
-    ra.label = '8x-a01'
-    ra.type = Yabitz::Model::Rack::RACKTYPE_DH_1
-    ra.datacenter = Yabitz::Model::Rack::DC_DATAHOTEL
+    ra.label = 'x80'
+    ra.type = Yabitz::Plugin::StandardRack42U.name
+    ra.datacenter = Yabitz::Plugin::StandardRack42U.datacenter
     ra.save
     ru = Yabitz::Model::RackUnit.new
-    ru.rackunit = '8x-a01-z1'
-    ru.dividing = Yabitz::Model::RackUnit::DIVIDING_FULL
+    ru.rackunit = 'x80-01'
+    ru.dividing = Yabitz::RackTypes::DIVIDING_FULL
     ru.rack = ra
     ru.save
 
@@ -315,8 +336,8 @@ describe Yabitz::Model::Host do
     @t.rackunit = ru
     @t.rackunit_by_id.should eql(ru.oid)
     @t.rackunit.oid.should eql(ru.oid)
-    @t.rackunit.rackunit.should eql('8x-a01-z1')
-    @t.rackunit.rack.label.should eql('8x-a01')
+    @t.rackunit.rackunit.should eql('x80-01')
+    @t.rackunit.rack.label.should eql('x80')
   end
   
   it "の #hwinfo に対して HwInformation のセットおよび取り出しが正常に行えること" do
@@ -435,9 +456,9 @@ describe Yabitz::Model::Host do
     @t.save
     @t.display_name.should eql("hwid:X9999")
 
-    @t.rackunit = Yabitz::Model::RackUnit.query_or_create(:rackunit => "9z-z99-x0", :rack => Yabitz::Model::Rack.query_or_create(:label => "9z-z99"))
+    @t.rackunit = Yabitz::Model::RackUnit.query_or_create(:rackunit => "z09-14", :rack => Yabitz::Model::Rack.query_or_create(:label => "z09"))
     @t.save
-    @t.display_name.should eql("rackunit:9z-z99-x0")
+    @t.display_name.should eql("rackunit:z09-14")
 
     @t.globalips = Yabitz::Model::IPAddress.query_or_create(:address => "125.6.172.15")
     @t.save
@@ -479,14 +500,14 @@ describe Yabitz::Model::Host do
     end
 
     makehost_has_tags(['hoge', 'pos', '20100901-18:30:20'])
-    makehost_has_tags(['Web', 'blog', '開発', '20100901-18:30:20'])
+    makehost_has_tags(['Web', 'blog', 'dev', '20100901-18:30:20'])
     makehost_has_tags(['App', 'blog', 'memcache', '20100901-18:30:20'])
-    makehost_has_tags(['dbm', 'blog', 'pos', '開発', '20100901-18:30:20'])
+    makehost_has_tags(['dbm', 'blog', 'pos', 'dev', '20100901-18:30:20'])
 
     @cls.query_tag('Web').size.should eql(1)
     @cls.query_tag('blog').size.should eql(3)
     @cls.query_tag('memcache').size.should eql(1)
-    @cls.query_tag('開発').size.should eql(2)
+    @cls.query_tag('dev').size.should eql(2)
     @cls.query_tag('pos').size.should eql(2)
     @cls.query_tag('20100901-18:30:20').size.should eql(4)
   end
