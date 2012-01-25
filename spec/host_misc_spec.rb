@@ -46,17 +46,12 @@ describe Yabitz::Model::TagChain do
 
     @cls.query(:tagchain => 'ab').size.should eql(1)
     @cls.query(:tagchain => 'bc').size.should eql(1)
-    @cls.query(:tagchain => 'cd').size.should eql(1)
-    @cls.query(:tagchain => 'de').size.should eql(1)
     @cls.query(:tagchain => 'cd,de').size.should eql(1)
-    @cls.query(:tagchain => 'ef fg').size.should eql(1)
     @cls.query(:tagchain => 'ef').size.should eql(1)
     @cls.query(:tagchain => 'fg').size.should eql(1)
 
     @cls.query(:tagchain => 'hoge').size.should eql(0)
 
-    @cls.query(:tagchain => '2010').size.should eql(1)
-    @cls.query(:tagchain => '09').size.should eql(1)
     @cls.query(:tagchain => '2010-09-01').size.should eql(1)
 
     @cls.query(:tagchain => 'moge').size.should eql(0)
@@ -66,12 +61,10 @@ describe Yabitz::Model::TagChain do
     t.tagchain = ['Webサーバ', 'DB', 'memcache', '開発']
     t.save
 
-    @cls.query(:tagchain => 'Webサーバ').size.should eql(1)
     @cls.query(:tagchain => 'サーバ').size.should eql(0)
     @cls.query(:tagchain => 'memcache').size.should eql(1)
     @cls.query(:tagchain => 'DB').size.should eql(1)
-    @cls.query(:tagchain => '開発').size.should eql(1)
-    
+
     Stratum.conn do |c|
       c.query("DELETE FROM #{@cls.tablename}")
     end
