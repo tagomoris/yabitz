@@ -494,6 +494,7 @@ class Yabitz::Application < Sinatra::Base
         host.rackunit = (json["rackunit"].nil? or json["rackunit"].empty?) ? nil : Yabitz::Model::RackUnit.query_or_create(:rackunit => json["rackunit"])
         host.hwid = json["hwid"]
         host.hwinfo = (json["hwinfo"].nil? or json['hwinfo'].empty?) ? nil : Yabitz::Model::HwInformation.query(:name => json["hwinfo"], :unique => true)
+        host.cpu = json["cpu"]
         host.memory = json["memory"]
         host.disk = json["disk"]
         host.os = json['os']
@@ -736,6 +737,7 @@ class Yabitz::Application < Sinatra::Base
                         Yabitz::Model::HwInformation.query_or_create(:name => content['hwinfo'])
                       end
       end
+      host.cpu = content['cpu'] unless equal_in_fact(host.cpu, content['cpu'])
       host.memory = content['memory'] unless equal_in_fact(host.memory, content['memory'])
       host.disk = content['disk'] unless equal_in_fact(host.disk, content['disk'])
       unless equal_in_fact(host.os, content['os'])
