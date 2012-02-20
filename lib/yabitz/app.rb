@@ -386,6 +386,8 @@ class Yabitz::Application < Sinatra::Base
         host.localips = params["localips#{i}"].split(/\s+/).select{|n|n.size > 0}.map{|lip| Yabitz::Model::IPAddress.query_or_create(:address => lip)}
         host.globalips = params["globalips#{i}"].split(/\s+/).select{|n|n.size > 0}.map{|gip| Yabitz::Model::IPAddress.query_or_create(:address => gip)}
         host.virtualips = params["virtualips#{i}"].split(/\s+/).select{|n|n.size > 0}.map{|gip| Yabitz::Model::IPAddress.query_or_create(:address => gip)}
+        alert_plugin = Yabitz::Plugin.get(:hostalerts).first
+        host.alert = alert_plugin ? alert_plugin.default_value : false
 
         if host.hwid and host.hwid.length > 0 and not hosttype.virtualmachine?
           bricks = Yabitz::Model::Brick.query(:hwid => host.hwid)

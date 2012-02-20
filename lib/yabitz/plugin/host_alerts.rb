@@ -22,5 +22,9 @@ module Yabitz::Plugin
         ''
       end
     end
+
+    def self.default_value
+      false
+    end
   end
 end

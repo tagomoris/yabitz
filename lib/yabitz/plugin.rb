@@ -43,6 +43,7 @@ module Yabitz
     # :hostalerts
     #   alert_title #=> '注意対象' or string specified
     #   alert_face(bool_value)  #=> String
+    #   default_value #=> true/false
     #
     # :member
     #   find_by_fullname_list(list)
