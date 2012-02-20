@@ -80,6 +80,9 @@
       %ul.valueslist
         - @host.send(pair.last).each do |v|
           %li.valueitem&= v
+  - alertplugin = Yabitz::Plugin.get(:hostalerts).first
+  - alerttitle = alertplugin ? alertplugin.alert_title : '注意対象'
+  = field_editable 'host', @host, :text, :alert, alerttitle, @host.alert, "なし"
   - if @user
     %form.inline.field_edit_form{:name => "hostfieldedit", :action => "/ybz/host/#{@host.oid}", :method => "POST", :onsubmit => "return false;"}
       %div.hidden

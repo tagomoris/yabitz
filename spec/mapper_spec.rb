@@ -7,11 +7,12 @@ describe Yabitz::Mapper::Generator do
     @cls = Yabitz::Mapper::Generator
   end
 
-  it "の .new に :method として :new/:get/:query_or_create/:always_update 以外のものを与えると必ず例外となること" do
+  it "の .new に :method として :new/:boolparser/:get/:query_or_create/:always_update 以外のものを与えると必ず例外となること" do
     lambda {@cls.new(nil, :method => :x)}.should raise_exception(ArgumentError)
     lambda {@cls.new(nil, :method => :query)}.should raise_exception(ArgumentError)
     lambda {@cls.new(nil, :method => :hoge)}.should raise_exception(ArgumentError)
     lambda {@cls.new(nil, :method => nil)}.should raise_exception(ArgumentError)
+    lambda {@cls.new(nil, :method => :boolparser)}.should_not raise_exception(ArgumentError)
   end
   
   it "の .new に :method => :new を指定するとき :class が指定されていないと例外となること" do
@@ -54,6 +55,46 @@ describe Yabitz::Mapper::Generator do
     str1.object_id.should_not eql(str2.object_id)
   end
   
+  it "の .new に :method => :boolparser を与えた場合、0/1/false/true/False/True/no/yes が正しくfalse/trueのどちらかになること" do
+    gen = @cls.new(nil, :method => :boolparser)
+
+    ret = gen.call_once(true)
+    ret.should eql(true)
+    ret.class.should eql(TrueClass)
+
+    ret = gen.call_once('true')
+    ret.should eql(true)
+    ret.class.should eql(TrueClass)
+
+    ret = gen.call_once(false)
+    ret.should eql(false)
+    ret.class.should eql(FalseClass)
+
+    ret = gen.call_once('false')
+    ret.should eql(false)
+    ret.class.should eql(FalseClass)
+
+    ret = gen.call_once('0')
+    ret.class.should eql(FalseClass)
+    ret = gen.call_once('1')
+    ret.class.should eql(TrueClass)
+
+    ret = gen.call_once('False')
+    ret.class.should eql(FalseClass)
+    ret = gen.call_once('True')
+    ret.class.should eql(TrueClass)
+
+    ret = gen.call_once('No')
+    ret.class.should eql(FalseClass)
+    ret = gen.call_once('Yes')
+    ret.class.should eql(TrueClass)
+
+    ret = gen.call_once('no')
+    ret.class.should eql(FalseClass)
+    ret = gen.call_once('yes')
+    ret.class.should eql(TrueClass)
+  end
+
   it "の .new に :getとKlassを与えた場合に #call_once(val) で Klass.get(val.to_i) の結果が返ること" do
     class PosA1
       attr_accessor :v

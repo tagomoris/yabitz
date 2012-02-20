@@ -40,6 +40,10 @@ module Yabitz
     #   host_parts #=> haml template as String
     #   [+] javascript_parts #=> javascript as String
     #
+    # :hostalerts
+    #   alert_title #=> '注意対象' or string specified
+    #   alert_face(bool_value)  #=> String
+    #
     # :member
     #   find_by_fullname_list(list)
     #   find_by_badge_list(list)

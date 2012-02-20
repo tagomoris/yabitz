@@ -23,7 +23,7 @@
             %img.button.clickablebutton{:src => "/images/edit.png", :alt => "edit"}
       - else
         %div.dataview.clickablelabel{:title => h(fieldvalue.to_s)}
-          &= (fieldvalue.nil? or fieldvalue.empty?) ? blanklabel : (display_value ? display_value : fieldvalue.to_s)
+          &= (fieldvalue.nil? or (fieldvalue.respond_to?(:empty?) and fieldvalue.empty?)) ? blanklabel : (display_value ? display_value : fieldvalue.to_s)
       - case input_type
       - when :text
         %div.dataedit
@@ -68,4 +68,4 @@
       - if link and not fieldvalue.nil? and not fieldvalue.empty?
         %a{:href => link}&= display_value ? display_value : fieldvalue.to_s
       - else
-        &= (fieldvalue.nil? or fieldvalue.empty?) ? blanklabel : (display_value.nil? ? fieldvalue.to_s : display_value)
+        &= (fieldvalue.nil? or (fieldvalue.respond_to?(:empty?) and fieldvalue.empty?)) ? blanklabel : (display_value.nil? ? fieldvalue.to_s : display_value)

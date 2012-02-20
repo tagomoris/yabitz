@@ -51,7 +51,7 @@
             &= osname + ': ' + set[:os][osname].to_s
     %td.td_padding_narrow
       %img{:src => "/images/1x1.gif"}
-    %td.td_base{:style => "text-align: center;"}
+    %td.td_base{:colspan => 3, :style => "text-align: center;"}
       = Yabitz::Model::Host.status_title(state)
       %br
       = set[:list].size.to_s + "ホスト"
@@ -79,7 +79,7 @@
           &= osname + ': ' + set[:os][osname].to_s
   %td.td_padding_narrow
     %img{:src => "/images/1x1.gif"}
-  %td.td_base{:style => "text-align: center;"}
+  %td.td_base{:colspan => 3, :style => "text-align: center;"}
     合計
     %br
     = host_list.size.to_s + "ホスト"

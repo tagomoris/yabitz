@@ -287,6 +287,21 @@
       %img{:src => "/images/1x1.gif"}
     %td.td_line_term
       %img{:src => "/images/1x1.gif"}
+- if from.alert != to.alert
+  %tr.host_outline
+    - alerts = Yabitz::Plugin.get(:hostalerts).first
+    %td.td_line_head{:style => "text-align: center;"}
+      &= alerts.alert_title
+    %td.td_padding
+      %img{:src => "/images/1x1.gif"}
+    %td.td_base{:style => "text-align: right;"}
+      &= from.alert.to_s
+    %td.td_padding_narrow{:style => "padding-left: 1em; padding-right: 1em;"}
+      %img{:src => "/images/1x1.gif"}
+    %td.td_base.strengthed{:style => "text-align: left;"}
+      &= to.alert.to_s
+    %td.td_line_term
+      %img{:src => "/images/1x1.gif"}
 - if from.notes != to.notes
   %tr.host_outline
     %td.td_line_head{:style => "text-align: center;"}

@@ -43,13 +43,14 @@ module Yabitz
       field :localips, :reflist, :model => 'Yabitz::Model::IPAddress', :column => 'local_ipaddrs', :empty => :ok
       field :globalips, :reflist, :model => 'Yabitz::Model::IPAddress', :column => 'global_ipaddrs', :empty => :ok
       field :virtualips, :reflist, :model => 'Yabitz::Model::IPAddress', :column => 'virtual_ipaddrs', :empty => :ok
+      field :alert, :bool, :default => false
       field :notes, :string, :length => 4096, :empty => :ok
       field :tagchain, :ref, :model => 'Yabitz::Model::TagChain', :empty => :ok
 
       CSVFIELDS_S = [:rackunit, :localips, :dnsnames, :hwid]
       CSVFIELDS_M = [:rackunit, :localips, :globalips, :service, :dnsnames, :hwinfo, :hwid, :status]
-      CSVFIELDS_L = [:rackunit, :localips, :globalips, :virtualips, :service, :dnsnames, :type, :hwinfo, :memory, :disk, :os, :hwid, :status]
-      CSVFIELDS_LL = [:oid, :rackunit, :localips, :globalips, :virtualips, :service, :dnsnames, :type, :hwinfo, :memory, :disk, :os, :hwid, :status]
+      CSVFIELDS_L = [:rackunit, :localips, :globalips, :virtualips, :service, :dnsnames, :type, :hwinfo, :cpu, :memory, :disk, :os, :hwid, :status]
+      CSVFIELDS_LL = [:oid, :rackunit, :localips, :globalips, :virtualips, :service, :dnsnames, :type, :hwinfo, :memory, :disk, :os, :hwid, :status, :alert]
 
       def json_meta_fields
         if self.localips_by_id.size > 0
@@ -63,6 +64,8 @@ module Yabitz
         case fieldname
         when :status, :type, :hwid, :cpu, :memory, :disk, :notes
           {:method => :new, :class => String}
+        when :alert
+          {:method => :boolparser}
         when :service
           {:method => :get, :class => Yabitz::Model::Service}
         when :parent, :children
@@ -275,11 +278,13 @@ module Yabitz
                     h.dnsnames.map(&:to_s).join(' '),
                     h.type,
                     h.hwinfo.to_s,
+                    h.cpu.to_s,
                     h.memory.to_s,
                     h.disk.to_s,
                     h.os.to_s,
                     h.hwid,
-                    h.status]
+                    h.status,
+                    h.alert.to_s]
           end
         end
       end

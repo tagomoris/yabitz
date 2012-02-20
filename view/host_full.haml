@@ -17,6 +17,8 @@
     &= Yabitz::Model::Host.status_title(host.status)
     %br
     &= host.service.name
+    %br
+    &= host.alert.to_s
   %td.td_padding_ex
     %img{:src => "/images/1x1.gif"}
   %td.td_base_narrow

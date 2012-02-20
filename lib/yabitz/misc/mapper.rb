@@ -25,6 +25,8 @@ module Yabitz
           raise ArgumentError, "missing proc" unless @proc and @proc.respond_to?(:call)
           raise ArgumentError, "missing this" unless @this
           raise ArgumentError, "missing field" unless @field
+        when :boolparser
+          # ok.
         else
           raise ArgumentError, "unknown update method type '#{@method}'"
         end
@@ -44,6 +46,9 @@ module Yabitz
         case @method
         when :new # for String, and others
           @class.new(val)
+        when :boolparser
+          valstr = val.to_s
+          valstr.casecmp('true') == 0 or valstr.casecmp('yes') == 0 or valstr == '1'
         when :get # for Stratum::Model, and val expected as string of oid
           @class.get(val.to_i)
         when :query_or_create

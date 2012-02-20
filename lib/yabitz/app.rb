@@ -775,6 +775,7 @@ class Yabitz::Application < Sinatra::Base
           host.virtualips = []
         end
       end
+      host.alert = content['alert']
       tags = content['tagchain'].is_a?(Array) ? content['tagchain'] : (content['tagchain'] && content['tagchain'].split(/\s+/))
       unless equal_in_fact(host.tagchain.tagchain, tags)
         host.tagchain.tagchain = tags

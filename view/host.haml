@@ -63,6 +63,16 @@
   %td.host_rackunit
     &= host.rackunit.to_s
     %img{:src => "/images/1x1.gif"}
+  %td.host_alert
+    - alertplugin = Yabitz::Plugin.get(:hostalerts).first
+    - if alertplugin
+      &= alertplugin.alert_face(host.alert)
+    - elsif host.alert
+      [警告あり]
+    - else
+      = ''
+  %td.td_padding_narrow
+    %img{:src => "/images/1x1.gif"}
   %td.td_line_term
     %img{:src => "/images/1x1.gif"}
 

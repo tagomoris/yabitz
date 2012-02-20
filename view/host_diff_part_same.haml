@@ -187,6 +187,18 @@
       %img{:src => "/images/1x1.gif"}
 -#
   %tr.host_outline
+    - alerts = Yabitz::Plugin.get(:hostalerts).first
+    %td.td_line_head{:style => "text-align: center;"}
+      &= alerts.alert_title
+    %td.td_padding
+      %img{:src => "/images/1x1.gif"}
+    %td.td_base{:colspan => 3, :style => "text-align: center;"}
+      = to.alert
+      %img{:src => "/images/1x1.gif"}
+    %td.td_line_term
+      %img{:src => "/images/1x1.gif"}
+-#
+  %tr.host_outline
     %td.td_line_head{:style => "text-align: center;"}
       メモ
     %td.td_padding
