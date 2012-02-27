@@ -611,6 +611,8 @@ class Yabitz::Application < Sinatra::Base
         after = records.select{|h| (tag.inserted_at - 15) <= h.inserted_at and h.inserted_at <= (tag.inserted_at + 15)}.first
         before = records.select{|h| h.inserted_at < (tag.inserted_at - 15)}.first
 
+        next if after.nil?
+
         @host_record_pairs.push([after, before])
       end
       @hide_selectionbox = true
