@@ -75,7 +75,7 @@ class Yabitz::Application < Sinatra::Base
   ### 認証 ###
   get '/ybz/authenticate/login' do
     protected!
-    if request.referer == '/'
+    if request.referer.nil? or request.referer.empty? or request.referer == '/'
       redirect '/ybz/services'
     end
     redirect request.referer
