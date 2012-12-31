@@ -1,9 +1,0 @@
--# coding: utf-8
-
-%div#detailbox
-  %h3
-    操作タグ: #{@opetag}
-  %div.field 関連ホスト
-  %ul.valueslist
-    - @hosts.each do |host|
-      %li.valueitem&= host.display_name
